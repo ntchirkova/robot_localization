@@ -53,6 +53,7 @@ class ParticleFilter(object):
             self.transform_helper.send_last_map_to_odom_transform()
             r.sleep()
 
+# use tf module to get transform between last pos and current pos, and apply relative transform to particles.
 
 if __name__ == '__main__':
     n = ParticleFilter()
