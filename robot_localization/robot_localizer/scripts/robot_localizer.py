@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import occupancy_field as ocf
+import occupancy_field
 from sensor_msgs.msg import LaserScan
-
-import rospy
 
 class RobotLocalizer(object):
     """
@@ -19,7 +17,7 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
-        self.field = ocf.OccupancyField()
+        self.field = OccupancyField()
 
 
     def process_scan(self, m):
