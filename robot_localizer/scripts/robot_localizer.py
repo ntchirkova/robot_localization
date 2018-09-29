@@ -12,6 +12,8 @@ import statistics
 import time, numpy, math, rospy
 import occupancy_field as ocf
 
+import rospy
+
 class RobotLocalizer(object):
     """
     doc
