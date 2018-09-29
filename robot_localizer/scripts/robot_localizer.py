@@ -1,7 +1,16 @@
 #!/usr/bin/env python
-import occupancy_field
+
 from __future__ import print_function
+from geometry_msgs.msg import PointStamped, PointStamped, Twist, Point
+from std_msgs.msg import Header
+from neato_node.msg import Bump
 from sensor_msgs.msg import LaserScan
+import matplotlib.pyplot as plt
+from datetime import datetime
+from visualization_msgs.msg import Marker
+import statistics
+import time, numpy, math, rospy
+import occupancy_field
 
 class RobotLocalizer(object):
     """
@@ -17,7 +26,7 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
-        self.field = OccupancyField()
+        self.field = occupancy_field.OccupancyField()
 
 
     def process_scan(self, m):
@@ -48,6 +57,7 @@ class RobotLocalizer(object):
     def run(self):
         # save odom position (Odom or TF Module)
         self.generate_random_points()
+        print("hi I am here")
 
         # if it's changed enough, send to particle filter
         pass
