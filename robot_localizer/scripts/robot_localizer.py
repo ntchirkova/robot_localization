@@ -55,8 +55,8 @@ class RobotLocalizer(object):
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
         #TODO: test width and height, generate random particles
-        width = field.map.info.width
-        height = field.map.info.height
+        width = self.field.map.info.width
+        height = self.field.map.info.height
         print(width)
         print(height)
         #this does not work yet but is a a start this needs location and orientation
@@ -110,6 +110,9 @@ class RobotLocalizer(object):
         # if it's changed enough, send to particle filter
         pass
 
+
+print('before starting')
 if __name__ == '__main__':
+    print('starting')
     node = RobotLocalizer()
     node.run()
