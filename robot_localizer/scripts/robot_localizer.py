@@ -99,15 +99,20 @@ class RobotLocalizer(object):
 
     """
     Functions to write or figure out where they are:
-    - odom to map of robot pose
-    - robot pose nearest object
-    - particles nearest object
-    - choose particles that might be robot - viable particles
-    - generate particles around viable particles
-    - move robot certain distance then stop (maybe just teleop)
-    - get encoder values of robot
-    - transform particles by encoder values
-    -
+    Order of particle filter:
+
+    1. generate initial 500 random particles
+    2. get ranges from robot
+        - determine 8 values for directions
+    3. Process particles
+     - project 8 distance from robot onto each particle -> gives a list of 8 points
+        - for each of 8 points of particle get nearest object -> sums to error distance
+        - 1/error distance = particle.weight
+    4. publish particle with highest weight
+    5. resample particles based on weight
+    6. move robot - get transform
+    7. transform resampled points with randomness
+
     """
 
 
