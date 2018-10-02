@@ -6,3 +6,4 @@ class Particle(object):
         self.x = x
         self.y = y
         self.theta = t
+        self.weight = 1
