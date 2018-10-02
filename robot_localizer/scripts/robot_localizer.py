@@ -5,10 +5,12 @@ from geometry_msgs.msg import PointStamped, PointStamped, Twist, Point
 from std_msgs.msg import Header
 from neato_node.msg import Bump
 from sensor_msgs.msg import LaserScan
+from particle import Particle
 import matplotlib.pyplot as plt
 from datetime import datetime
 from visualization_msgs.msg import Marker
 import statistics
+import random as r
 import time, numpy, math, rospy
 import occupancy_field as ocf
 
@@ -59,6 +61,13 @@ class RobotLocalizer(object):
         height = self.field.map.info.height
         print(width)
         print(height)
+        for i in range(500):
+            x = r.randrange(0,width)
+            y = r.randrange(0,height)
+            t = math.radians(r.randrange(0,360))
+            p = Particle(x,y,t)
+            self.particles.append(p)
+
         #this does not work yet but is a a start this needs location and orientation
 
     def gen_neighbor_particles(self):
