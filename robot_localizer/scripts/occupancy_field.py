@@ -23,6 +23,7 @@ class OccupancyField(object):
         # grab the map from the map server
         rospy.wait_for_service("static_map")
         static_map = rospy.ServiceProxy("static_map", GetMap)
+        #determine how to use '/home/catkin_ws/src/robot_localization/robot_localizer/maps/ac109_1.yaml'
         self.map = static_map().map
 
         # The coordinates of each grid cell in the map

@@ -68,7 +68,7 @@ class RobotLocalizer(object):
             p = Particle(x,y,t)
             self.particles.append(p)
 
-        #this does not work yet but is a a start this needs location and orientation
+        #this does not work yet but is a a start this needs location and orientation, should work with map
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
@@ -118,11 +118,12 @@ class RobotLocalizer(object):
 
     def run(self):
         # save odom position (Odom or TF Module)
-        self.generate_random_points()
-        print("hi I am here")
+        #self.generate_random_points()
+        while true:
+            print("hi I am here")
 
         # if it's changed enough, send to particle filter
-        pass
+
 
 
 print('before starting')
