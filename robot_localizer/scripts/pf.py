@@ -6,6 +6,7 @@ from __future__ import print_function, division
 import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseArray, Pose
 
+import numpy as np
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
 
@@ -31,6 +32,7 @@ class ParticleFilter(object):
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
+        self.particles = []
 
     def update_initial_pose(self, msg):
         """ Callback function to handle re-initializing the particle filter
@@ -53,8 +55,26 @@ class ParticleFilter(object):
             self.transform_helper.send_last_map_to_odom_transform()
             r.sleep()
 
+    def resample_particles(self):
+        """Resample particles with replacement.  
+        """
+        if len(self.particles):
+            weights = [particle.weight for particle in self.particles]
+
+            return list(np.random.choice(
+                self.particles,
+                size=len(self.particles),
+                replace=True,
+                p=weights,
+            ))
+        else:
+            print("No particles to resample from")
+            return None
+
+
 # use tf module to get transform between last pos and current pos, and apply relative transform to particles.
 
 if __name__ == '__main__':
     n = ParticleFilter()
     n.run()
+
