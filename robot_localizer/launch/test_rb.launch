@@ -1,0 +1,19 @@
+<launch>
+  <arg name="scan_topic" default="stable_scan"/>
+
+  <arg name="map_file"/>
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find robot_localizer)/maps/ac109_1.yaml"/>
+
+ <!-- Localization node
+
+	This launch file either uses the built in particle filter AMCL or the
+	particle filter you are implementing.
+  -->
+
+
+  <node name="robot_localizer" pkg="robot_localizer" type="robot_localizer.py" output="screen">
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+
+</launch>
