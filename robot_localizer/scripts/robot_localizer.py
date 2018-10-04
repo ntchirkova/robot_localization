@@ -29,6 +29,7 @@ class RobotLocalizer(object):
         # subscribers and publisher
         self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
 
+        self.tfHelper = TFHelper()
 
         # store array of poses and weights
         # store how it's moved ie.
@@ -39,8 +40,11 @@ class RobotLocalizer(object):
         # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
 
-        self.last_odom = None
-        self.diff_transform = None
+        self.last_odom_msg = None
+        self.diff_transform = last_to_current_transform = {
+                'translation': None,
+                'rotation': None,
+            }
         self.odom_changed = False # Toggles to True when 
 
 
@@ -48,25 +52,35 @@ class RobotLocalizer(object):
         MIN_TRAVEL_DISANCE = 0.25
         MIN_TRAVEL_ANGLE = math.radians(10)
 
-        last_xyt = TFHelper.convert_pose_to_xy_and_theta(self.last_odom.pose)
-        current_xyt = TFHelper.convert_pose_to_xy_and_theta(msg.pose)
+        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose)
+        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose)
 
+        # Get translation in odom
         translation = [
             current_xyt[0] - last_xyt[0],  # x
             current_xyt[1] - last_xyt[1],  # y
-            0                              # z
         ]
 
-        theta = TFHelper.angle_diff(current_xyt[2] - last_xyt[2])
+        # rotate to vehicle frame
+        translation = self.tfHelper.rotate_2d_vector(translation, last_xyt[2])
+
+        # get orientation diff
+        theta = self.tfHelper.angle_diff(current_xyt[2], last_xyt[2])
         
-        distance_travelled = sqrt(translation[0] ** 2 + translation[1] ** 2)
+        # Schedule to update particle filter if there's enough change
+        distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
-            last_to_current_transform = TFHelper.convert_translation_rotation_to_pose(
-                translation, TFHelper.convert_theta_to_quaternion(theta)
-            )
+            # TODO(matt): consider using actual transform
+            # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
+            #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
+            # )
+            last_to_current_transform = {
+                'translation': translation,
+                'rotation': theta,
+            }
 
             self.diff_transform = last_to_current_transform
-            self.last_odom = msg
+            self.last_odom_msg = msg
             self.odom_changed = True
 
 

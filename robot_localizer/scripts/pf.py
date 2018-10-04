@@ -70,6 +70,14 @@ class ParticleFilter(object):
             print("No particles to resample from")
             return None
 
+    def update_particle(self, particle, transform):
+        # rotate translation in the particle's frame
+        particle_translation = self.transform_helper.rotate_2d_vector(transform.translation, particle.angle)
+
+        particle.translate(particle_translation)
+        particle.rotate(transform.rotation)
+
+
 
 # use tf module to get transform between last pos and current pos, and apply relative transform to particles.
 

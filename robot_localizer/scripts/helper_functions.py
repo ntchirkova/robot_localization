@@ -11,6 +11,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 import tf.transformations as t
 from tf import TransformListener
 from tf import TransformBroadcaster
+import numpy as np
 
 import math
 
@@ -84,6 +85,15 @@ class TFHelper(object):
             return d1
         else:
             return d2
+
+    def rotate_2d_vector(self, vec, angle):
+        # angle = math.radians(30)
+        # vec = [1, 0]
+        c, s = math.cos(angle), math.sin(angle)
+        R = np.array(((c, -s), (s, c)))
+
+        return R.dot(vec)
+
 
     def fix_map_to_odom_transform(self, robot_pose, timestamp):
         """ This method constantly updates the offset of the map and
