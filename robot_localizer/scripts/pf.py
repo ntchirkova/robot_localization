@@ -56,8 +56,7 @@ class ParticleFilter(object):
             r.sleep()
 
     def resample_particles(self):
-        """Resample particles with replacement.  
-        """
+        """Resample particles with replacement."""
         if len(self.particles):
             weights = [particle.weight for particle in self.particles]
 

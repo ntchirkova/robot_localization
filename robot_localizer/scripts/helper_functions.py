@@ -58,6 +58,9 @@ class TFHelper(object):
         angles = t.euler_from_quaternion(orientation_tuple)
         return (pose.position.x, pose.position.y, angles[2])
 
+    def convert_theta_to_quaternion(self, theta):
+        return t.quaternion_from_euler(0, 0, theta)
+
     def angle_normalize(self, z):
         """ convenience function to map an angle to the range [-pi,pi] """
         return math.atan2(math.sin(z), math.cos(z))

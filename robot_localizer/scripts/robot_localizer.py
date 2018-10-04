@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 from geometry_msgs.msg import PointStamped, PointStamped, Twist, Point
+from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
 from neato_node.msg import Bump
 from sensor_msgs.msg import LaserScan
@@ -13,6 +14,7 @@ import statistics
 import random as r
 import time, numpy, math, rospy
 import occupancy_field as ocf
+from helper_functions import TFHelper
 
 import rospy
 
@@ -25,13 +27,47 @@ class RobotLocalizer(object):
         rospy.Subscriber('/scan', LaserScan, self.process_scan)
         # init pf
         # subscribers and publisher
+        self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
+
 
         # store array of poses and weights
         # store how it's moved ie.
         self.xs = None
         self.ys = None
         self.field = ocf.OccupancyField()
+
+        # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
+
+        self.last_odom = None
+        self.diff_transform = None
+        self.odom_changed = False # Toggles to True when 
+
+
+    def update_odom(self, msg):
+        MIN_TRAVEL_DISANCE = 0.25
+        MIN_TRAVEL_ANGLE = math.radians(10)
+
+        last_xyt = TFHelper.convert_pose_to_xy_and_theta(self.last_odom.pose)
+        current_xyt = TFHelper.convert_pose_to_xy_and_theta(msg.pose)
+
+        translation = [
+            current_xyt[0] - last_xyt[0],  # x
+            current_xyt[1] - last_xyt[1],  # y
+            0                              # z
+        ]
+
+        theta = TFHelper.angle_diff(current_xyt[2] - last_xyt[2])
+        
+        distance_travelled = sqrt(translation[0] ** 2 + translation[1] ** 2)
+        if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
+            last_to_current_transform = TFHelper.convert_translation_rotation_to_pose(
+                translation, TFHelper.convert_theta_to_quaternion(theta)
+            )
+
+            self.diff_transform = last_to_current_transform
+            self.last_odom = msg
+            self.odom_changed = True
 
 
     def process_scan(self, m):
@@ -118,10 +154,13 @@ class RobotLocalizer(object):
 
     def run(self):
         # save odom position (Odom or TF Module)
-        self.generate_random_points()
+        # self.generate_random_points()
         print("hi I am here")
 
-        # if it's changed enough, send to particle filter
+        if (self.odom_changed):
+            pass # Do the particle filter stuff
+
+            self.odom_changed = False
         pass
 
 
