@@ -45,7 +45,13 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
+
         self.odom_changed = False # Toggles to True when the odom frame has changed enough
+
+    def something(self, msg):
+        print("something")
+        self.odom_changed = False # Toggles to True when
+
 
 
     def update_odom(self, msg):
@@ -137,6 +143,7 @@ class RobotLocalizer(object):
             a = self.particles[i]
 
 
+
     def teleop(self):
         """Adds teleop functionality, records encoder values"""
         #TODO:
@@ -176,7 +183,7 @@ class RobotLocalizer(object):
         # For testing
         # while True:
         #     print("hi I am here")
-        
+
         while not rospy.is_shutdown():
             if (self.odom_changed):
                 pass # Do the particle filter stuff
