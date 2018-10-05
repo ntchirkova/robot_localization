@@ -36,10 +36,6 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
-<<<<<<< HEAD
-        # self.field = ocf.OccupancyField()  TODO: UNCOMMENT ONCE WE HAVE MAP SERVER
-=======
->>>>>>> e8ecb72170b43cb9e9c38cece577db8df8331b70
 
         # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
@@ -49,14 +45,7 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
-<<<<<<< HEAD
         self.odom_changed = False # Toggles to True when the odom frame has changed enough
-
-    def something(self, msg):
-        print("something")
-=======
-        self.odom_changed = False # Toggles to True when
->>>>>>> e8ecb72170b43cb9e9c38cece577db8df8331b70
 
 
     def update_odom(self, msg):
@@ -146,7 +135,6 @@ class RobotLocalizer(object):
         #TODO:
         for i in range(len(p)):
             a = self.particles[i]
-
 
 
     def teleop(self):
