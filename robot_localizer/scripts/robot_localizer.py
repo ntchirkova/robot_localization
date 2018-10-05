@@ -45,7 +45,7 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
-        self.odom_changed = False # Toggles to True when 
+        self.odom_changed = False # Toggles to True when
 
 
     def update_odom(self, msg):
@@ -66,7 +66,7 @@ class RobotLocalizer(object):
 
         # get orientation diff
         theta = self.tfHelper.angle_diff(current_xyt[2], last_xyt[2])
-        
+
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
@@ -87,6 +87,7 @@ class RobotLocalizer(object):
     def process_scan(self, m):
         """Storing lidar data
         """
+        #TODO:
         ranges = m.ranges
         xs = []
         ys = []
@@ -130,10 +131,20 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def compare_points(self):
+    def translate_point(self):
+        #rotates by t1, moves point by d, rotates by t2
+        for i in range(len(p)):
+            a = self.particles[i]
+            a[3] += t1
+
+
+    def compare_point(self):
         """Compares particles to lidar scans, returns weights / probablility values"""
         #TODO:
-        pass
+        for i in range(len(p)):
+            a = self.particles[i]
+
+
 
     def teleop(self):
         """Adds teleop functionality, records encoder values"""
