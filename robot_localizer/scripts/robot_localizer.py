@@ -24,7 +24,9 @@ class RobotLocalizer(object):
     """
 
     def __init__(self):
-        rospy.Subscriber('/scan', LaserScan, self.process_scan)
+        print('Initializing')
+        rospy.init_node('localizer')
+        self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.process_scan)
         # init pf
         # subscribers and publisher
         self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
@@ -35,7 +37,7 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
-        self.field = ocf.OccupancyField()
+        # self.field = ocf.OccupancyField()  TODO: UNCOMMENT ONCE WE HAVE MAP SERVER
 
         # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
@@ -45,10 +47,14 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
-        self.odom_changed = False # Toggles to True when 
+        self.odom_changed = False # Toggles to True when the odom frame has changed enough
+
+    def something(self, msg):
+        print("something")
 
 
     def update_odom(self, msg):
+        print("Updating robot localizer odom")
         MIN_TRAVEL_DISANCE = 0.25
         MIN_TRAVEL_ANGLE = math.radians(10)
 
@@ -69,6 +75,7 @@ class RobotLocalizer(object):
         
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
+        print("distance_travelled = {}\nangle_travelled = {}".format(distance_travelled, theta))
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
             # TODO(matt): consider using actual transform
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
@@ -167,22 +174,24 @@ class RobotLocalizer(object):
 
 
     def run(self):
+        print('Running')
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
 
         # For testing
-        while True:
-            print("hi I am here")
+        # while True:
+        #     print("hi I am here")
+        
+        while not rospy.is_shutdown():
+            if (self.odom_changed):
+                pass # Do the particle filter stuff
+                print("\nODOM HAS CHANGED")
 
-        if (self.odom_changed):
-            pass # Do the particle filter stuff
-
-            self.odom_changed = False
-        pass
+                self.odom_changed = False
+            pass
 
 
 print('before starting')
 if __name__ == '__main__':
-    print('starting')
     node = RobotLocalizer()
     node.run()
