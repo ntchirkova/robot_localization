@@ -13,7 +13,6 @@ from visualization_msgs.msg import Marker
 import statistics
 import random as r
 import time, numpy, math, rospy
-import occupancy_field as ocf
 from helper_functions import TFHelper
 
 import rospy
@@ -35,7 +34,6 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
-        self.field = ocf.OccupancyField()
 
         # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
@@ -105,21 +103,11 @@ class RobotLocalizer(object):
         self.xs = xs
         self.ys = ys
 
-    def gen_init_particles(self):
-        """Generating random particles with x, y, and t values"""
-        #TODO: test width and height, generate random particles
-        width = self.field.map.info.width
-        height = self.field.map.info.height
-        print(width)
-        print(height)
-        for i in range(500):
-            x = r.randrange(0,width)
-            y = r.randrange(0,height)
-            t = math.radians(r.randrange(0,360))
-            p = Particle(x,y,t)
-            self.particles.append(p)
 
-        #this does not work yet but is a a start this needs location and orientation, should work with map
+    def get_8_directions(self):
+        pass
+
+
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
