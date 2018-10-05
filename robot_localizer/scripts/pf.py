@@ -11,6 +11,7 @@ from particle import Particle
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
 import random as r
+import math
 
 
 class ParticleFilter(object):
@@ -41,8 +42,6 @@ class ParticleFilter(object):
         #TODO: test width and height, generate random particles
         width = self.occupancy_field.map.info.width
         height = self.occupancy_field.map.info.height
-        print(width)
-        print(height)
         for i in range(500):
             x = r.randrange(0,width)
             y = r.randrange(0,height)
@@ -93,6 +92,9 @@ class ParticleFilter(object):
         particle.translate(particle_translation)
         particle.rotate(transform.rotation)
 
+
+    def run(self):
+        pass
 
 
 # use tf module to get transform between last pos and current pos, and apply relative transform to particles.
