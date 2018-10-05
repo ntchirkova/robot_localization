@@ -49,12 +49,15 @@ class RobotLocalizer(object):
 
 
     def update_odom(self, msg):
-        print("Updating robot localizer odom")
-        MIN_TRAVEL_DISANCE = 0.25
-        MIN_TRAVEL_ANGLE = math.radians(10)
+        MIN_TRAVEL_DISANCE = 0.1
+        MIN_TRAVEL_ANGLE = math.radians(5)
 
-        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose)
-        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose)
+        if self.last_odom_msg is None:
+            self.last_odom_msg = msg
+            return
+
+        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose.pose)
+        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose.pose)
 
         # Get translation in odom
         translation = [
@@ -70,12 +73,12 @@ class RobotLocalizer(object):
 
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
-        print("distance_travelled = {}\nangle_travelled = {}".format(distance_travelled, theta))
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
             # TODO(matt): consider using actual transform
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
+            
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
@@ -180,7 +183,7 @@ class RobotLocalizer(object):
         while not rospy.is_shutdown():
             if (self.odom_changed):
                 pass # Do the particle filter stuff
-                print("\nODOM HAS CHANGED")
+                print("\nODOM HAS CHANGED
 
                 self.odom_changed = False
             pass
