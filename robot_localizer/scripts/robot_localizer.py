@@ -13,7 +13,6 @@ from visualization_msgs.msg import Marker
 import statistics
 import random as r
 import time, numpy, math, rospy
-import occupancy_field as ocf
 from helper_functions import TFHelper
 
 import rospy
@@ -37,7 +36,10 @@ class RobotLocalizer(object):
         # store how it's moved ie.
         self.xs = None
         self.ys = None
+<<<<<<< HEAD
         # self.field = ocf.OccupancyField()  TODO: UNCOMMENT ONCE WE HAVE MAP SERVER
+=======
+>>>>>>> e8ecb72170b43cb9e9c38cece577db8df8331b70
 
         # TODO: Should this be in the particle filter?
         self.particles = [] #list of particles, will be updated later
@@ -47,10 +49,14 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
+<<<<<<< HEAD
         self.odom_changed = False # Toggles to True when the odom frame has changed enough
 
     def something(self, msg):
         print("something")
+=======
+        self.odom_changed = False # Toggles to True when
+>>>>>>> e8ecb72170b43cb9e9c38cece577db8df8331b70
 
 
     def update_odom(self, msg):
@@ -72,7 +78,7 @@ class RobotLocalizer(object):
 
         # get orientation diff
         theta = self.tfHelper.angle_diff(current_xyt[2], last_xyt[2])
-        
+
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
         print("distance_travelled = {}\nangle_travelled = {}".format(distance_travelled, theta))
@@ -94,6 +100,7 @@ class RobotLocalizer(object):
     def process_scan(self, m):
         """Storing lidar data
         """
+        #TODO:
         ranges = m.ranges
         xs = []
         ys = []
@@ -111,21 +118,11 @@ class RobotLocalizer(object):
         self.xs = xs
         self.ys = ys
 
-    def gen_init_particles(self):
-        """Generating random particles with x, y, and t values"""
-        #TODO: test width and height, generate random particles
-        width = self.field.map.info.width
-        height = self.field.map.info.height
-        print(width)
-        print(height)
-        for i in range(500):
-            x = r.randrange(0,width)
-            y = r.randrange(0,height)
-            t = math.radians(r.randrange(0,360))
-            p = Particle(x,y,t)
-            self.particles.append(p)
 
-        #this does not work yet but is a a start this needs location and orientation, should work with map
+    def get_8_directions(self):
+        pass
+
+
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
@@ -137,10 +134,20 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def compare_points(self):
+    def translate_point(self):
+        #rotates by t1, moves point by d, rotates by t2
+        for i in range(len(p)):
+            a = self.particles[i]
+            a[3] += t1
+
+
+    def compare_point(self):
         """Compares particles to lidar scans, returns weights / probablility values"""
         #TODO:
-        pass
+        for i in range(len(p)):
+            a = self.particles[i]
+
+
 
     def teleop(self):
         """Adds teleop functionality, records encoder values"""

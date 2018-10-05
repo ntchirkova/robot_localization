@@ -7,8 +7,10 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseArray, Pose
 
 import numpy as np
+from particle import Particle
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
+import random as r
 
 
 class ParticleFilter(object):
@@ -33,6 +35,20 @@ class ParticleFilter(object):
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
         self.particles = []
+
+    def gen_init_particles(self):
+        """Generating random particles with x, y, and t values"""
+        #TODO: test width and height, generate random particles
+        width = self.occupancy_field.map.info.width
+        height = self.occupancy_field.map.info.height
+        print(width)
+        print(height)
+        for i in range(500):
+            x = r.randrange(0,width)
+            y = r.randrange(0,height)
+            t = math.radians(r.randrange(0,360))
+            p = Particle(x,y,t)
+            self.particles.append(p)
 
     def update_initial_pose(self, msg):
         """ Callback function to handle re-initializing the particle filter
@@ -84,4 +100,3 @@ class ParticleFilter(object):
 if __name__ == '__main__':
     n = ParticleFilter()
     n.run()
-
