@@ -37,11 +37,8 @@ class RobotLocalizer(object):
         self.xs = None
         self.ys = None
 
-        # TODO: Should this be in the particle filter?
-        self.particles = [] #list of particles, will be updated later
-
         self.last_odom_msg = None
-        self.diff_transform = last_to_current_transform = {
+        self.diff_transform = {
                 'translation': None,
                 'rotation': None,
             }
@@ -190,7 +187,7 @@ class RobotLocalizer(object):
         while not rospy.is_shutdown():
             if (self.odom_changed):
                 pass # Do the particle filter stuff
-                print("\nODOM HAS CHANGED
+                print("\nODOM HAS CHANGED")
 
                 self.odom_changed = False
             pass

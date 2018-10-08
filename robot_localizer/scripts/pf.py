@@ -61,15 +61,6 @@ class ParticleFilter(object):
                                                         msg.header.stamp)
         # initialize your particle filter based on the xy_theta tuple
 
-    def run(self):
-        r = rospy.Rate(5)
-
-        while not(rospy.is_shutdown()):
-            # in the main loop all we do is continuously broadcast the latest
-            # map to odom transform
-            self.transform_helper.send_last_map_to_odom_transform()
-            r.sleep()
-
     def resample_particles(self):
         """Resample particles with replacement."""
         if len(self.particles):
@@ -85,16 +76,40 @@ class ParticleFilter(object):
             print("No particles to resample from")
             return None
 
+    def update_particle_with_randomness(self, particle, transform):
+        # TODO(matt): Make this a tunable param
+        DISTANCE_VAR_SCALE = 0.1
+        ANGLE_VAR_SCALE = math.radians(5)
+
+        # NOTE: We scale the variance instead of the standard deviation because
+        # that makes it independent of the update time (the noise in one update
+        # will be the same as the sum of the noise in two updates)
+        distance = math.sqrt(transform.translation[0]**2 + transform.translation[1]**2)
+        translation_mean, translation_var = 0, DISTANCE_VAR_SCALE * distance  # scale with magnitude
+        rotation_mean, rotation_var = 0, ANGLE_VAR_SCALE
+
+        modified_transform = transform
+        modified_transform.translation[0] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
+        modified_transform.translation[1] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
+        modified_transform.rotation += np.random.normal(rotation_mean, math.sqrt(rotation_var))
+
+        self.update_particle(particle, modified_transform)
+
     def update_particle(self, particle, transform):
-        # rotate translation in the particle's frame
+        # rotate translation in the particle's direction
         particle_translation = self.transform_helper.rotate_2d_vector(transform.translation, particle.angle)
 
         particle.translate(particle_translation)
         particle.rotate(transform.rotation)
 
-
     def run(self):
-        pass
+        r = rospy.Rate(5)
+
+        while not(rospy.is_shutdown()):
+            # in the main loop all we do is continuously broadcast the latest
+            # map to odom transform
+            self.transform_helper.send_last_map_to_odom_transform()
+            r.sleep()
 
 
 # use tf module to get transform between last pos and current pos, and apply relative transform to particles.
