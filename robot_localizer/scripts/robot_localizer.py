@@ -81,7 +81,7 @@ class RobotLocalizer(object):
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
-            
+
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
@@ -96,15 +96,15 @@ class RobotLocalizer(object):
         """Storing lidar data
         """
         #TODO:
-        ranges = m.ranges
+        self.ranges = m.ranges
         xs = []
         ys = []
         xsf = []
         ysf = []
         for i in range(len(ranges)):
-            if ranges[i] != 0:
+            if self.ranges[i] != 0:
                 theta = math.radians(i)
-                r = ranges[i]
+                r = self.ranges[i]
                 xf = math.cos(theta)*r
                 yf = math.sin(theta)*r
                 xs.append(xf)
@@ -114,9 +114,14 @@ class RobotLocalizer(object):
         self.ys = ys
 
 
-    def get_8_directions(self):
-        pass
-
+    def get_x_directions(self, x):
+        interval = 360/x
+        angle = 0
+        directions = []
+        for i in range(x):
+            dist = self.ranges[angle]
+            directions.append((math.radians(angle),dist))
+            angle = angle + interval
 
 
     def gen_neighbor_particles(self):
