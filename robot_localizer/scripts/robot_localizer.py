@@ -32,8 +32,6 @@ class RobotLocalizer(object):
 
         self.tfHelper = TFHelper()
 
-        # store array of poses and weights
-        # store how it's moved ie.
         self.xs = None
         self.ys = None
 
@@ -45,8 +43,8 @@ class RobotLocalizer(object):
                 'translation': None,
                 'rotation': None,
             }
-        self.odom_changed = False # Toggles to True when
 
+        self.odom_changed = False # Toggles to True when the odom frame has changed enough
 
     def update_odom(self, msg):
         MIN_TRAVEL_DISANCE = 0.25
@@ -91,10 +89,8 @@ class RobotLocalizer(object):
         ranges = m.ranges
         xs = []
         ys = []
-        xsf = []
-        ysf = []
-        for i in range(len(ranges)):
-            if ranges[i] != 0:
+        for i in range(len(self.ranges)):
+            if self.ranges[i] != 0:
                 theta = math.radians(i)
                 r = ranges[i]
                 xf = math.cos(theta)*r
@@ -105,6 +101,14 @@ class RobotLocalizer(object):
         self.xs = xs
         self.ys = ys
 
+    def get_x_directions(self, x):
+        interval = 360/x
+        angle = 0
+        directions = []
+        for i in range(x):
+            dist = self.ranges[angle]
+            directions.append((math.radians(angle),dist))
+            angle = angle + interval
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
@@ -140,8 +144,8 @@ class RobotLocalizer(object):
     Functions to write or figure out where they are:
     Order of particle filter:
 
-    1. generate initial 500 random particles
-    2. get ranges from robot
+    1. DONE generate initial 500 random particles
+    2. DONE get ranges from robot
         - determine 8 values for directions
         -find lowest distance to obstacle
     3. Process particles
@@ -149,9 +153,9 @@ class RobotLocalizer(object):
         - for each particle get nearest object -> error distance
         - 1/error distance = particle.weight
     4. publish particle with highest weight
-    5. resample particles based on weight
-    6. move robot - get transform
-    7. transform resampled points with randomness
+    5. DONE resample particles based on weight
+    6. DONE move robot - get transform
+    7. DONE transform resampled points with randomness
 
     """
 
