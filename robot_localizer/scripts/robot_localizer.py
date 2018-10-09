@@ -116,18 +116,23 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-
+"""
     def get_8_directions(self):
-        """translates in 8 angles of lidar scan for comparison later"""
+        translates in 8 angles of lidar scan for comparison later
         for i in range(len(ParticleFilter.particles)):
             a = ParticleFilter.particles[i]
             for n in range(8):
+                """
 
 
     def compare_point(self):
-        """Compares particles to lidar scans, returns weights / probablility values"""
+        """Compares particles to lidar scans, returns weights / probablility values
+        Comparing translated particle to lidar scan"""
         #TODO:
-        d = OccupancyField.get_closest_obstacle_distance(self, self.particles[i][1], self.particles[i][2])
+
+        for i in range(8): #check this
+            update_particle(self.particles[i], transform)
+            d = OccupancyField.get_closest_obstacle_distance(self.particles[i][1], self.particles[i][2])
 
 
     def teleop(self):
@@ -149,9 +154,10 @@ class RobotLocalizer(object):
     1. generate initial 500 random particles
     2. get ranges from robot
         - determine 8 values for directions
+        -find lowest distance to obstacle
     3. Process particles
-     - project 8 distance from robot onto each particle -> gives a list of 8 points
-        - for each of 8 points of particle get nearest object -> sums to error distance
+     - project lowest distance from robot onto each particle
+        - for each particle get nearest object -> error distance
         - 1/error distance = particle.weight
     4. publish particle with highest weight
     5. resample particles based on weight
