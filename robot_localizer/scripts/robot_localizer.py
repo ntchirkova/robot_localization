@@ -116,29 +116,18 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-"""
-    def get_8_directions(self):
-        translates in 8 angles of lidar scan for comparison later
-        for i in range(len(ParticleFilter.particles)):
-            a = ParticleFilter.particles[i]
-            for n in range(8):
-                """
-
 
     def compare_point(self):
-        """Compares particles to lidar scans, returns weights / probablility values
-        Comparing translated particle to lidar scan"""
-        #TODO:
+        """Compares translated particle to lidar scans, returns weights / probablility values"""
+        d = []
+        errordis = 0
+        for a in range(500):
+            for b in range(8):
+                #run get 8 clouds
+                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
+            errordis[a] = 1 / (sum(d) + .01)
+        return errordis[a]
 
-        for i in range(8): #check this
-            update_particle(self.particles[i], transform)
-            d = OccupancyField.get_closest_obstacle_distance(self.particles[i][1], self.particles[i][2])
-
-
-    def teleop(self):
-        """Adds teleop functionality, records encoder values"""
-        #TODO:
-        pass
 
     def get_encoder_value(self):
         """Records odom movement, translate to x, y, and theta"""
