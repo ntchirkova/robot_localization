@@ -39,7 +39,6 @@ class ParticleFilter(object):
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
-        #TODO: test width and height, generate random particles
         width = self.occupancy_field.map.info.width
         height = self.occupancy_field.map.info.height
         for i in range(500):
