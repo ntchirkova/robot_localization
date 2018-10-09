@@ -39,7 +39,7 @@ class RobotLocalizer(object):
         self.ys = None
 
         self.last_odom_msg = None
-        self.diff_transform = last_to_current_transform = {
+        self.diff_transform = {
                 'translation': None,
                 'rotation': None,
             }
@@ -120,16 +120,6 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def compare_points(self):
-        """Compares translated particle to lidar scans, returns weights values"""
-        d = []
-        errordis = 0
-        for a in range(500):
-            particle.ParticleCloud(self.particle[a])
-            for b in range(8):
-                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            particle.Particle.weight = 1 / (sum(d) + .01)
-
     def get_encoder_value(self):
         """Records odom movement, translate to x, y, and theta"""
         #TODO:
@@ -163,11 +153,21 @@ class RobotLocalizer(object):
         NUM_DIRECTIONS = 8
 
         if (self.odom_changed):
+            # Get lidar readings in every direction
             self.get_x_directions(NUM_DIRECTIONS)
 
+            # For each particle compare lidar scan with map
+            self.particle_filter.compare_points()
 
-            pass # Do the particle filter stuff
+            # Publish best guess
 
+            # Resample particles
+            self.particle_filter.resample_particles()
+
+            # Update particles
+            self.particle_filter.update_all_particles(self.diff_transform)
+
+            # Wait until robot moves enough again
             self.odom_changed = False
 
 
