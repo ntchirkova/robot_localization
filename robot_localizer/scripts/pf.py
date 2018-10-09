@@ -112,7 +112,7 @@ class ParticleFilter(object):
 
     def compare_points(self):
         """Compares translated particle to lidar scans, returns weights values"""
-        d = []
+        distances = []
         errordis = 0
         for a in range(500):
             particle.ParticleCloud(self.particle[a])
