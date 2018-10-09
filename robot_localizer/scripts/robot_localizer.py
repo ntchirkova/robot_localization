@@ -7,6 +7,7 @@ from std_msgs.msg import Header
 from neato_node.msg import Bump
 from sensor_msgs.msg import LaserScan
 from particle import Particle
+from particle import ParticleCloud
 import matplotlib.pyplot as plt
 from datetime import datetime
 from visualization_msgs.msg import Marker
@@ -119,20 +120,15 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def compare_point(self):
-        """Compares particles to lidar scans, returns weights / probablility values
-        Comparing translated particle to lidar scan"""
-        #TODO:
-
-        for i in range(8): #check this
-            update_particle(self.particles[i], transform)
-            d = OccupancyField.get_closest_obstacle_distance(self.particles[i][1], self.particles[i][2])
-
-
-    def teleop(self):
-        """Adds teleop functionality, records encoder values"""
-        #TODO:
-        pass
+    def compare_points(self):
+        """Compares translated particle to lidar scans, returns weights values"""
+        d = []
+        errordis = 0
+        for a in range(500):
+            particle.ParticleCloud(self.particle[a])
+            for b in range(8):
+                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
+            particle.Particle.weight = 1 / (sum(d) + .01)
 
     def get_encoder_value(self):
         """Records odom movement, translate to x, y, and theta"""
@@ -147,12 +143,12 @@ class RobotLocalizer(object):
 
     1. DONE generate initial 500 random particles
     2. DONE get ranges from robot
-        - determine 8 values for directions
+        -determine 8 values for directions
         -find lowest distance to obstacle
     3. Process particles
      - project lowest distance from robot onto each particle
-        - for each particle get nearest object -> error distance
-        - 1/error distance = particle.weight
+        -DONE for each particle get nearest object -> error distance
+        -DONE 1/error distance = particle.weight
     4. publish particle with highest weight
     5. DONE resample particles based on weight
     6. DONE move robot - get transform
@@ -168,7 +164,7 @@ class RobotLocalizer(object):
 
         if (self.odom_changed):
             self.get_x_directions(NUM_DIRECTIONS)
-            
+
 
             pass # Do the particle filter stuff
 
