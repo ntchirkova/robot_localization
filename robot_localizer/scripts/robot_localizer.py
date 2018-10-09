@@ -32,11 +32,10 @@ class RobotLocalizer(object):
 
         self.tfHelper = TFHelper()
 
+        self.particle_filter = ParticleFilter()
+
         self.xs = None
         self.ys = None
-
-        # TODO: Should this be in the particle filter?
-        self.particles = [] #list of particles, will be updated later
 
         self.last_odom_msg = None
         self.diff_transform = last_to_current_transform = {
@@ -120,15 +119,6 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-"""
-    def get_8_directions(self):
-        translates in 8 angles of lidar scan for comparison later
-        for i in range(len(ParticleFilter.particles)):
-            a = ParticleFilter.particles[i]
-            for n in range(8):
-                """
-
-
     def compare_point(self):
         """Compares particles to lidar scans, returns weights / probablility values
         Comparing translated particle to lidar scan"""
@@ -174,16 +164,15 @@ class RobotLocalizer(object):
     def run(self):
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
-
-        # For testing
-        while True:
-            print("hi I am here")
+        NUM_DIRECTIONS = 8
 
         if (self.odom_changed):
+            self.get_x_directions(NUM_DIRECTIONS)
+            
+
             pass # Do the particle filter stuff
 
             self.odom_changed = False
-        pass
 
 
 print('before starting')

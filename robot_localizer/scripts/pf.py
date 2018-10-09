@@ -35,7 +35,7 @@ class ParticleFilter(object):
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
-        self.particles = []
+        self.particles = self.gen_init_particles()
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
