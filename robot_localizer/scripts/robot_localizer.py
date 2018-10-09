@@ -33,14 +33,13 @@ class RobotLocalizer(object):
 
         self.tfHelper = TFHelper()
 
+        self.particle_filter = ParticleFilter()
+
         self.xs = None
         self.ys = None
 
-        # TODO: Should this be in the particle filter?
-        self.particles = [] #list of particles, will be updated later
-
         self.last_odom_msg = None
-        self.diff_transform = last_to_current_transform = {
+        self.diff_transform = {
                 'translation': None,
                 'rotation': None,
             }
@@ -111,6 +110,7 @@ class RobotLocalizer(object):
             directions.append((math.radians(angle),dist))
             angle = angle + interval
 
+<<<<<<< HEAD
     def compare_points(self):
         """Compares translated particle to lidar scans, returns weights values"""
         d = []
@@ -120,6 +120,23 @@ class RobotLocalizer(object):
             for b in range(8):
                 d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
             particle.Particle.weight = 1 / (sum(d) + .01)
+=======
+    def gen_neighbor_particles(self):
+        """Generates particles around given points"""
+        #TODO:
+        pass
+
+    def find_all_nearest_objects(self):
+        """Determines nearest non-zero point of all point (loops through)"""
+        #TODO:
+        pass
+
+    def get_encoder_value(self):
+        """Records odom movement, translate to x, y, and theta"""
+        #TODO:
+        pass
+
+>>>>>>> 7695098717f8cefa7112d4e251a50909e5f9c5aa
 
 
     """
@@ -145,16 +162,25 @@ class RobotLocalizer(object):
     def run(self):
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
-
-        # For testing
-        while True:
-            print("hi I am here")
+        NUM_DIRECTIONS = 8
 
         if (self.odom_changed):
-            pass # Do the particle filter stuff
+            # Get lidar readings in every direction
+            self.get_x_directions(NUM_DIRECTIONS)
 
+            # For each particle compare lidar scan with map
+            self.particle_filter.compare_points()
+
+            # Publish best guess
+
+            # Resample particles
+            self.particle_filter.resample_particles()
+
+            # Update particles
+            self.particle_filter.update_all_particles(self.diff_transform)
+
+            # Wait until robot moves enough again
             self.odom_changed = False
-        pass
 
 
 print('before starting')

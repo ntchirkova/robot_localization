@@ -26,7 +26,7 @@ class ParticleCloud(object):
         self.particle = p
         self.pts = []
 
-    def generate_points(robo_pts):
+    def generate_points(self, robo_pts):
         l = len(robo_pts)
         for i in range(l):
             dif_ang = 2*math.pi/l * i
