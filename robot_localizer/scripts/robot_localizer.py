@@ -14,6 +14,8 @@ import statistics
 import random as r
 import time, numpy, math, rospy
 from helper_functions import TFHelper
+from occupancy_field import OccupancyField
+from pf import ParticleFilter
 
 import rospy
 
@@ -104,11 +106,6 @@ class RobotLocalizer(object):
         self.ys = ys
 
 
-    def get_8_directions(self):
-        pass
-
-
-
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
         #TODO:
@@ -119,19 +116,18 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def translate_point(self):
-        #rotates by t1, moves point by d, rotates by t2
-        for i in range(len(p)):
-            a = self.particles[i]
-            a[3] += t1
+
+    def get_8_directions(self):
+        """translates in 8 angles of lidar scan for comparison later"""
+        for i in range(len(ParticleFilter.particles)):
+            a = ParticleFilter.particles[i]
+            for n in range(8):
 
 
     def compare_point(self):
         """Compares particles to lidar scans, returns weights / probablility values"""
         #TODO:
-        for i in range(len(p)):
-            a = self.particles[i]
-
+        d = OccupancyField.get_closest_obstacle_distance(self, self.particles[i][1], self.particles[i][2])
 
 
     def teleop(self):
