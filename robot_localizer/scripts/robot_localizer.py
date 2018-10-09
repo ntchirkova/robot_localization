@@ -14,6 +14,8 @@ import statistics
 import random as r
 import time, numpy, math, rospy
 from helper_functions import TFHelper
+from occupancy_field import OccupancyField
+from pf import ParticleFilter
 
 import rospy
 
@@ -23,9 +25,7 @@ class RobotLocalizer(object):
     """
 
     def __init__(self):
-        print('Initializing')
-        rospy.init_node('localizer')
-        self.scan_sub = rospy.Subscriber('/scan', LaserScan, self.process_scan)
+        rospy.Subscriber('/scan', LaserScan, self.process_scan)
         # init pf
         # subscribers and publisher
         self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
@@ -35,8 +35,11 @@ class RobotLocalizer(object):
         self.xs = None
         self.ys = None
 
+        # TODO: Should this be in the particle filter?
+        self.particles = [] #list of particles, will be updated later
+
         self.last_odom_msg = None
-        self.diff_transform = {
+        self.diff_transform = last_to_current_transform = {
                 'translation': None,
                 'rotation': None,
             }
@@ -44,15 +47,11 @@ class RobotLocalizer(object):
         self.odom_changed = False # Toggles to True when the odom frame has changed enough
 
     def update_odom(self, msg):
-        MIN_TRAVEL_DISANCE = 0.1
-        MIN_TRAVEL_ANGLE = math.radians(5)
+        MIN_TRAVEL_DISANCE = 0.25
+        MIN_TRAVEL_ANGLE = math.radians(10)
 
-        if self.last_odom_msg is None:
-            self.last_odom_msg = msg
-            return
-
-        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose.pose)
-        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose.pose)
+        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose)
+        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose)
 
         # Get translation in odom
         translation = [
@@ -73,7 +72,6 @@ class RobotLocalizer(object):
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
-
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
@@ -88,13 +86,13 @@ class RobotLocalizer(object):
         """Storing lidar data
         """
         #TODO:
-        self.ranges = m.ranges
+        ranges = m.ranges
         xs = []
         ys = []
         for i in range(len(self.ranges)):
             if self.ranges[i] != 0:
                 theta = math.radians(i)
-                r = self.ranges[i]
+                r = ranges[i]
                 xf = math.cos(theta)*r
                 yf = math.sin(theta)*r
                 xs.append(xf)
@@ -102,16 +100,6 @@ class RobotLocalizer(object):
 
         self.xs = xs
         self.ys = ys
-
-
-    def get_x_directions(self, x):
-        interval = 360/x
-        angle = 0
-        directions = []
-        for i in range(x):
-            dist = self.ranges[angle]
-            directions.append((math.radians(angle),dist))
-            angle = angle + interval
 
 
     def gen_neighbor_particles(self):
@@ -124,19 +112,23 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
-    def translate_point(self):
-        #rotates by t1, moves point by d, rotates by t2
-        for i in range(len(p)):
-            a = self.particles[i]
-            a[3] += t1
+"""
+    def get_8_directions(self):
+        translates in 8 angles of lidar scan for comparison later
+        for i in range(len(ParticleFilter.particles)):
+            a = ParticleFilter.particles[i]
+            for n in range(8):
+                """
 
 
     def compare_point(self):
-        """Compares particles to lidar scans, returns weights / probablility values"""
+        """Compares particles to lidar scans, returns weights / probablility values
+        Comparing translated particle to lidar scan"""
         #TODO:
-        for i in range(len(p)):
-            a = self.particles[i]
 
+        for i in range(8): #check this
+            update_particle(self.particles[i], transform)
+            d = OccupancyField.get_closest_obstacle_distance(self.particles[i][1], self.particles[i][2])
 
 
     def teleop(self):
@@ -158,9 +150,10 @@ class RobotLocalizer(object):
     1. DONE generate initial 500 random particles
     2. DONE get ranges from robot
         - determine 8 values for directions
+        -find lowest distance to obstacle
     3. Process particles
-     - project 8 distance from robot onto each particle -> gives a list of 8 points
-        - for each of 8 points of particle get nearest object -> sums to error distance
+     - project lowest distance from robot onto each particle
+        - for each particle get nearest object -> error distance
         - 1/error distance = particle.weight
     4. publish particle with highest weight
     5. DONE resample particles based on weight
@@ -171,24 +164,22 @@ class RobotLocalizer(object):
 
 
     def run(self):
-        print('Running')
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
 
         # For testing
-        # while True:
-        #     print("hi I am here")
+        while True:
+            print("hi I am here")
 
-        while not rospy.is_shutdown():
-            if (self.odom_changed):
-                pass # Do the particle filter stuff
-                print("\nODOM HAS CHANGED")
+        if (self.odom_changed):
+            pass # Do the particle filter stuff
 
-                self.odom_changed = False
-            pass
+            self.odom_changed = False
+        pass
 
 
 print('before starting')
 if __name__ == '__main__':
+    print('starting')
     node = RobotLocalizer()
     node.run()
