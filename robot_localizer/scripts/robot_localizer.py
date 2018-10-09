@@ -122,7 +122,7 @@ class RobotLocalizer(object):
         pass
 
 
-    def compare_point(self):
+    def compare_points(self):
         """Compares translated particle to lidar scans, returns weights values"""
         d = []
         errordis = 0
@@ -130,8 +130,8 @@ class RobotLocalizer(object):
             particle.ParticleCloud(self.particle[a])
             for b in range(8):
                 d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            weight[a] = 1 / (sum(d) + .01)
-        return weight[a]
+            particle.Particle.weight = 1 / (sum(d) + .01)
+
 
 
     def get_encoder_value(self):
@@ -147,12 +147,12 @@ class RobotLocalizer(object):
 
     1. DONE generate initial 500 random particles
     2. DONE get ranges from robot
-        - determine 8 values for directions
+        -determine 8 values for directions
         -find lowest distance to obstacle
     3. Process particles
      - project lowest distance from robot onto each particle
-        - for each particle get nearest object -> error distance
-        - 1/error distance = particle.weight
+        -DONE for each particle get nearest object -> error distance
+        -DONE 1/error distance = particle.weight
     4. publish particle with highest weight
     5. DONE resample particles based on weight
     6. DONE move robot - get transform
