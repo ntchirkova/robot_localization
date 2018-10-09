@@ -7,6 +7,7 @@ from std_msgs.msg import Header
 from neato_node.msg import Bump
 from sensor_msgs.msg import LaserScan
 from particle import Particle
+from particle import ParticleCloud
 import matplotlib.pyplot as plt
 from datetime import datetime
 from visualization_msgs.msg import Marker
@@ -122,15 +123,15 @@ class RobotLocalizer(object):
 
 
     def compare_point(self):
-        """Compares translated particle to lidar scans, returns weights / probablility values"""
+        """Compares translated particle to lidar scans, returns weights values"""
         d = []
         errordis = 0
         for a in range(500):
+            particle.ParticleCloud(self.particle[a])
             for b in range(8):
-                #run get 8 clouds
                 d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            errordis[a] = 1 / (sum(d) + .01)
-        return errordis[a]
+            weight[a] = 1 / (sum(d) + .01)
+        return weight[a]
 
 
     def get_encoder_value(self):

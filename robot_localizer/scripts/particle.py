@@ -20,7 +20,7 @@ class Particle(object):
     def rotate(self, angle):
         self.angle = self.tfHelper.angle_normalize(self.theta + angle)
 
-class ParicleCloud(object):
+class ParticleCloud(object):
 
     def __init__(self, p):
         self.particle = p
