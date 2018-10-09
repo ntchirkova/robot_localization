@@ -31,6 +31,11 @@ class ParticleFilter(object):
                                             PoseArray,
                                             queue_size=10)
 
+        #publisher for the top weighted particle
+        self.topparticle_pub = rospy.Publisher("topparticle",
+                                            PoseArray,
+                                            queue_size=10)
+
         # create instances of two helper objects that are provided to you
         # as part of the project
         self.occupancy_field = OccupancyField()
@@ -47,7 +52,7 @@ class ParticleFilter(object):
             t = math.radians(r.randrange(0,360))
             p = Particle(x,y,t)
             self.particles.append(p)
-    
+
     def update_initial_pose(self, msg):
         """ Callback function to handle re-initializing the particle filter
             based on a pose estimate.  These pose estimates could be generated
