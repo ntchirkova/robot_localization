@@ -101,6 +101,14 @@ class RobotLocalizer(object):
         self.xs = xs
         self.ys = ys
 
+    def get_x_directions(self, x):
+        interval = 360/x
+        angle = 0
+        directions = []
+        for i in range(x):
+            dist = self.ranges[angle]
+            directions.append((math.radians(angle),dist))
+            angle = angle + interval
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
