@@ -120,6 +120,7 @@ class ParticleFilter(object):
                 d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
             particle.Particle.weight = 1 / (sum(d) + .01)
 
+
     def run(self):
         r = rospy.Rate(5)
 
