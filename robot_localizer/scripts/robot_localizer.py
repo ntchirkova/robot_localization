@@ -26,33 +26,39 @@ class RobotLocalizer(object):
     """
 
     def __init__(self):
-        rospy.Subscriber('/scan', LaserScan, self.process_scan)
-        # init pf
-        # subscribers and publisher
-        self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
-
+        print("init RobotLocalizer")
+        rospy.init_node('localizer')
         self.tfHelper = TFHelper()
+
+        self.particle_filter = ParticleFilter()
 
         self.xs = None
         self.ys = None
-
-        # TODO: Should this be in the particle filter?
-        self.particles = [] #list of particles, will be updated later
+        self.ranges = []  # Lidar scan
 
         self.last_odom_msg = None
-        self.diff_transform = last_to_current_transform = {
+        print(self.last_odom_msg)
+        self.diff_transform = {
                 'translation': None,
                 'rotation': None,
             }
 
         self.odom_changed = False # Toggles to True when the odom frame has changed enough
 
-    def update_odom(self, msg):
-        MIN_TRAVEL_DISANCE = 0.25
-        MIN_TRAVEL_ANGLE = math.radians(10)
+        # subscribers and publisher
+        self.laser_sub = rospy.Subscriber('/scan', LaserScan, self.process_scan)
+        self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
 
-        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose)
-        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose)
+    def update_odom(self, msg):
+        MIN_TRAVEL_DISANCE = 0.1
+        MIN_TRAVEL_ANGLE = math.radians(5)
+
+        if self.last_odom_msg is None:
+            self.last_odom_msg = msg
+            return
+
+        last_xyt = self.tfHelper.convert_pose_to_xy_and_theta(self.last_odom_msg.pose.pose)
+        current_xyt = self.tfHelper.convert_pose_to_xy_and_theta(msg.pose.pose)
 
         # Get translation in odom
         translation = [
@@ -68,11 +74,13 @@ class RobotLocalizer(object):
 
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
+        print(distance_travelled)
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
             # TODO(matt): consider using actual transform
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
+            
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
@@ -87,13 +95,13 @@ class RobotLocalizer(object):
         """Storing lidar data
         """
         #TODO:
-        ranges = m.ranges
+        self.ranges = m.ranges
         xs = []
         ys = []
         for i in range(len(self.ranges)):
             if self.ranges[i] != 0:
                 theta = math.radians(i)
-                r = ranges[i]
+                r = self.ranges[i]
                 xf = math.cos(theta)*r
                 yf = math.sin(theta)*r
                 xs.append(xf)
@@ -120,19 +128,6 @@ class RobotLocalizer(object):
         """Determines nearest non-zero point of all point (loops through)"""
         #TODO:
         pass
-
-
-    def compare_points(self):
-        """Compares translated particle to lidar scans, returns weights values"""
-        d = []
-        errordis = 0
-        for a in range(500):
-            particle.ParticleCloud(self.particle[a])
-            for b in range(8):
-                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            particle.Particle.weight = 1 / (sum(d) + .01)
-
-
 
     def get_encoder_value(self):
         """Records odom movement, translate to x, y, and theta"""
@@ -164,16 +159,27 @@ class RobotLocalizer(object):
     def run(self):
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
-
-        # For testing
-        while True:
-            print("hi I am here")
+        NUM_DIRECTIONS = 8
 
         if (self.odom_changed):
-            pass # Do the particle filter stuff
+            print("Odom changed, let's do some stuff")
 
+            # Get lidar readings in every direction
+            self.get_x_directions(NUM_DIRECTIONS)
+
+            # For each particle compare lidar scan with map
+            self.particle_filter.compare_points()
+
+            # Publish best guess
+
+            # Resample particles
+            self.particle_filter.resample_particles()
+
+            # Update particles
+            self.particle_filter.update_all_particles(self.diff_transform)
+
+            # Wait until robot moves enough again
             self.odom_changed = False
-        pass
 
 
 print('before starting')
