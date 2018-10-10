@@ -110,17 +110,6 @@ class RobotLocalizer(object):
             directions.append((math.radians(angle),dist))
             angle = angle + interval
 
-<<<<<<< HEAD
-    def compare_points(self):
-        """Compares translated particle to lidar scans, returns weights values"""
-        d = []
-        errordis = 0
-        for a in range(500):
-            particle.ParticleCloud(self.particle[a])
-            for b in range(8):
-                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            particle.Particle.weight = 1 / (sum(d) + .01)
-=======
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
         #TODO:
@@ -136,7 +125,6 @@ class RobotLocalizer(object):
         #TODO:
         pass
 
->>>>>>> 7695098717f8cefa7112d4e251a50909e5f9c5aa
 
 
     """

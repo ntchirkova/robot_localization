@@ -36,11 +36,12 @@ class ParticleFilter(object):
                                             PoseArray,
                                             queue_size=10)
 
+
         # create instances of two helper objects that are provided to you
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
-        self.particles = self.gen_init_particles()
+        self.particles = []
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
@@ -80,10 +81,6 @@ class ParticleFilter(object):
             print("No particles to resample from")
             return None
 
-    def update_all_particles(self, transform):
-        for particle in self.particles:
-            self.update_particle_with_randomness(particle, transform)
-
     def update_particle_with_randomness(self, particle, transform):
         # TODO(matt): Make this a tunable param
         DISTANCE_VAR_SCALE = 0.1
@@ -109,16 +106,6 @@ class ParticleFilter(object):
 
         particle.translate(particle_translation)
         particle.rotate(transform.rotation)
-
-    def compare_points(self):
-        """Compares translated particle to lidar scans, returns weights values"""
-        d = []
-        errordis = 0
-        for a in range(500):
-            particle.ParticleCloud(self.particle[a])
-            for b in range(8):
-                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            particle.Particle.weight = 1 / (sum(d) + .01)
 
     def run(self):
         r = rospy.Rate(5)
