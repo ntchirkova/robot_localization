@@ -10,6 +10,7 @@ import numpy as np
 from particle import Particle
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
+from visualization_msgs.msg import MarkerArray
 import random as r
 import math
 
@@ -30,12 +31,37 @@ class ParticleFilter(object):
         self.particle_pub = rospy.Publisher("particlecloud",
                                             PoseArray,
                                             queue_size=10)
-
+        self.pub_markers = rospy.Publisher('/visualization_markerarray',
+                                          MarkerArray, queue_size=10)
         # create instances of two helper objects that are provided to you
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
         self.particles = []
+        self.markerArray = MarkerArray()
+
+    def get_marker(self, x, y):
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.type = marker.SPHERE
+        marker.pose.position.x = x
+        marker.pose.position.y = y
+        marker.pose.position.z = 0
+        marker.scale.x = .3
+	    marker.scale.y = .3
+	    marker.scale.z = .3
+        marker.color.a = 1.0;
+        marker.color.r = 0.0;
+        marker.color.g = 1.0;
+        marker.color.b = 0.0;
+        return marker
+
+    def draw_markerArray(self):
+        markerArray = MarkerArray()
+        for p in self.particles:
+            m = self.get_marker()
+            markerArray.markers.append(m)
+        self.pub_markers.publish(markerArray)
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
@@ -47,7 +73,7 @@ class ParticleFilter(object):
             t = math.radians(r.randrange(0,360))
             p = Particle(x,y,t)
             self.particles.append(p)
-    
+
     def update_initial_pose(self, msg):
         """ Callback function to handle re-initializing the particle filter
             based on a pose estimate.  These pose estimates could be generated
