@@ -10,6 +10,7 @@ import numpy as np
 from particle import Particle
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
+from visualization_msgs.msg import MarkerArray
 import random as r
 import math
 
@@ -107,6 +108,20 @@ class ParticleFilter(object):
         particle.translate(particle_translation)
         particle.rotate(transform.rotation)
 
+<<<<<<< HEAD
+=======
+    def compare_points(self):
+        """Compares translated particle to lidar scans, returns weights values"""
+        distances = []
+        errordis = 0
+        for a in range(500):
+            particle.ParticleCloud(self.particle[a])
+            for b in range(8):
+                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
+            particle.Particle.weight = 1 / (sum(d) + .01)
+
+
+>>>>>>> e01371381255b39a8a9ce0c1779293b3a9143f2d
     def run(self):
         r = rospy.Rate(5)
 
