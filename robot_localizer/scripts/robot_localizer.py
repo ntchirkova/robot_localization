@@ -120,6 +120,7 @@ class RobotLocalizer(object):
             dist = self.ranges[angle]
             directions.append((math.radians(angle),dist))
             angle = angle + interval
+        return directions
 
     def gen_neighbor_particles(self):
         """Generates particles around given points"""
@@ -162,22 +163,17 @@ class RobotLocalizer(object):
         # save odom position (Odom or TF Module)
         # self.generate_random_points()
         NUM_DIRECTIONS = 8
-
+        self.particle_filter.gen_init_particles()
         while not(rospy.is_shutdown()):
-            self.particle_filter.gen_init_particles()
-            robo_pts = [2,3,2,3,2,3,2,3]
-            # For each particle compare lidar scan with map
-            self.particle_filter.compare_points(robo_pts)
-            print(self.particle_filter.particles[0].weight)
             if (self.odom_changed):
                 print("Odom changed, let's do some stuff")
 
                 # Get lidar readings in every direction
-                #self.get_x_directions(NUM_DIRECTIONS)
-                self.particle_filter.gen_init_particles()
-                robo_pts = [2,3,2,3,2,3,2,3]
+                robo_pts = self.get_x_directions(NUM_DIRECTIONS)
+
                 # For each particle compare lidar scan with map
                 self.particle_filter.compare_points(robo_pts)
+                
                 print(self.particle_filter.particles[0].weight)
 
                 # Publish best guess
