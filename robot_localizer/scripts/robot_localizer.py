@@ -164,14 +164,21 @@ class RobotLocalizer(object):
         NUM_DIRECTIONS = 8
 
         while not(rospy.is_shutdown()):
+            self.particle_filter.gen_init_particles()
+            robo_pts = [2,3,2,3,2,3,2,3]
+            # For each particle compare lidar scan with map
+            self.particle_filter.compare_points(robo_pts)
+            print(self.particle_filter.particles[0].weight)
             if (self.odom_changed):
                 print("Odom changed, let's do some stuff")
 
                 # Get lidar readings in every direction
-                self.get_x_directions(NUM_DIRECTIONS)
-
+                #self.get_x_directions(NUM_DIRECTIONS)
+                self.particle_filter.gen_init_particles()
+                robo_pts = [2,3,2,3,2,3,2,3]
                 # For each particle compare lidar scan with map
-                self.particle_filter.compare_points()
+                self.particle_filter.compare_points(robo_pts)
+                print(self.particle_filter.particles[0].weight)
 
                 # Publish best guess
 

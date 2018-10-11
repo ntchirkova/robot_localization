@@ -131,7 +131,7 @@ class ParticleFilter(object):
                              be obtained by calling get_x_directions in robot localizerself.
         """
         for p in self.particles:
-            p_cloud = ParticleCLoud(p)
+            p_cloud = ParticleCloud(p)
             p_cloud.generate_points(robo_pts)
             d = []
             for pt in p_cloud.pts:
