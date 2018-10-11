@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from geometry_msgs.msg import PointStamped, PointStamped, Twist, Point
+from geometry_msgs.msg import PointStamped, PointStamped, Twist, Point, PoseArray
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
 from neato_node.msg import Bump
@@ -48,6 +48,16 @@ class RobotLocalizer(object):
         # subscribers and publisher
         self.laser_sub = rospy.Subscriber('/scan', LaserScan, self.process_scan)
         self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
+
+        ### Used for the particle filter
+        # publisher for the particle cloud for visualizing in rviz.
+        self.particle_pub = rospy.Publisher("particlecloud",
+                                            PoseArray,
+                                            queue_size=10)
+        # publisher for the top weighted particle
+        self.topparticle_pub = rospy.Publisher("topparticle",
+                                            PoseArray,
+                                            queue_size=10)
 
         print("RobotLocalizer initialized")
 
@@ -180,6 +190,9 @@ class RobotLocalizer(object):
 
                 # Update particles
                 self.particle_filter.update_all_particles(self.diff_transform)
+
+                # Publish cloud
+                self.particle_filter.publish_particle_cloud(self.particle_pub)
 
                 # Wait until robot moves enough again
                 self.odom_changed = False
