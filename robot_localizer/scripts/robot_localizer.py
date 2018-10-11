@@ -173,10 +173,10 @@ class RobotLocalizer(object):
 
                 # For each particle compare lidar scan with map
                 self.particle_filter.compare_points(robo_pts)
-                
+
                 print(self.particle_filter.particles[0].weight)
 
-                # Publish best guess
+                # Publish best guessself.particle_filter.gen_init_particles()
 
                 # Resample particles
                 self.particle_filter.resample_particles()
