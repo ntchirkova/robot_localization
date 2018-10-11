@@ -7,7 +7,7 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseArray, Pose
 
 import numpy as np
-from particle import Particle
+from particle import Particle, ParticleCloud
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
 from visualization_msgs.msg import MarkerArray
@@ -109,15 +109,32 @@ class ParticleFilter(object):
         particle.rotate(transform.rotation)
 
 
-    def compare_points(self):
-        """Compares translated particle to lidar scans, returns weights values"""
-        distances = []
-        errordis = 0
-        for a in range(500):
-            particle.ParticleCloud(self.particle[a])
-            for b in range(8):
-                d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
-            particle.Particle.weight = 1 / (sum(d) + .01)
+    # def compare_points(self):
+    #     """Compares translated particle to lidar scans, returns weights values"""
+    #     distances = []
+    #     errordis = 0
+    #     for a in range(500):
+    #         particle.ParticleCloud(self.particle[a])
+    #         for b in range(8):
+    #             d[b] = OccupancyField.get_closest_obstacle_distance(particle.ParticleCloud[b][1],particle.ParticleCloud[b][2])
+    #         particle.Particle.weight = 1 / (sum(d) + .01)
+
+    def compare_points(self, robo_pts):
+        """ This function determines the weights for each particle.
+
+        Args:
+            robo_pts (list): is a list of lidar readings for n directions. It can
+                             be obtained by calling get_x_directions in robot localizerself.
+        """
+        for p in self.particles:
+            p_cloud = ParticleCLoud(p)
+            p_cloud.generate_points(robo_pts)
+            d = []
+            for pt in p_cloud.pts:
+                d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
+            p.weight = 1 / (sum(d) + .01)
+
+
 
 
     def run(self):

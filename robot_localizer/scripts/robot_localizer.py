@@ -80,7 +80,7 @@ class RobotLocalizer(object):
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
-            
+
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
@@ -148,7 +148,7 @@ class RobotLocalizer(object):
      - project lowest distance from robot onto each particle
         -DONE for each particle get nearest object -> error distance
         -DONE 1/error distance = particle.weight
-    4. publish particle with highest weight
+    4. DONE publish particle with highest weight
     5. DONE resample particles based on weight
     6. DONE move robot - get transform
     7. DONE transform resampled points with randomness
