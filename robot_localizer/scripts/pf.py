@@ -19,7 +19,7 @@ class ParticleFilter(object):
     """ The class that represents a Particle Filter ROS Node
     """
     def __init__(self):
-        rospy.init_node('pf')
+        #rospy.init_node('pf')
 
         # pose_listener responds to selection of a new approximate robot
         # location (for instance using rviz)
@@ -108,8 +108,7 @@ class ParticleFilter(object):
         particle.translate(particle_translation)
         particle.rotate(transform.rotation)
 
-<<<<<<< HEAD
-=======
+
     def compare_points(self):
         """Compares translated particle to lidar scans, returns weights values"""
         distances = []
@@ -121,7 +120,6 @@ class ParticleFilter(object):
             particle.Particle.weight = 1 / (sum(d) + .01)
 
 
->>>>>>> e01371381255b39a8a9ce0c1779293b3a9143f2d
     def run(self):
         r = rospy.Rate(5)
 
