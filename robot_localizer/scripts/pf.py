@@ -32,21 +32,26 @@ class ParticleFilter(object):
         self.particles = []
 
     def publish_particle_cloud(self, publisher):
+        msg = PoseArray()
+
         # Make pose from particle for all particles
-        particle_poses = [particle.get_pose() for particle in self.particles]
+        msg.poses = [particle.get_pose() for particle in self.particles]
 
         # Publish
-        publisher.publish(particle_poses)
+        publisher.publish(msg)
 
     def publish_top_particle(self, publisher):
+        msg = PoseArray()
+
         top_particle = self.particles[0]
 
         for particle in self.particles:
             if particle.weight > top_particle.weight:
                 top_particle = particle
 
-        print([top_particle.get_pose()])
-        publisher.publish([top_particle.get_pose()])
+        msg.poses.append(top_particle)
+        print(msg)
+        publisher.publish(msg)
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
@@ -74,7 +79,10 @@ class ParticleFilter(object):
     def resample_particles(self):
         """Resample particles with replacement."""
         if len(self.particles):
+            
             weights = [particle.weight for particle in self.particles]
+            total_weight = sum(weights)
+            weights = [weight / total_weight for weight in weights]
 
             return list(np.random.choice(
                 self.particles,

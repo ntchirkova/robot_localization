@@ -32,9 +32,9 @@ class ParticleCloud(object):
         self.pts = []
 
     def generate_points(self, robo_pts):
-        l = len(robo_pts)
-        for i in range(l):
-            dif_ang = 2*math.pi/l * i
-            x = robo_pts[i] * math.cos(self.particle.theta + dif_ang)
-            y = robo_pts[i] * math.sin(self.particle.theta + dif_ang)
+        robo_pts_len = len(robo_pts)
+        for i in range(robo_pts_len):
+            diff_ang = 2*math.pi/robo_pts_len * i
+            x = robo_pts[i][0] * math.cos(self.particle.theta + diff_ang)
+            y = robo_pts[i][1] * math.sin(self.particle.theta + diff_ang)
             self.pts.append((x,y))
