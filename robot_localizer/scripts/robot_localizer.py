@@ -174,19 +174,19 @@ class RobotLocalizer(object):
         # self.generate_random_points()
         NUM_DIRECTIONS = 8
         self.particle_filter.gen_init_particles()
-        # Get lidar readings in x directions
-        robo_pts = self.get_x_directions(NUM_DIRECTIONS)
-        # For each particle compare lidar scan with map
-        self.particle_filter.compare_points(robo_pts)
-
-        # Publish best guessself.particle_filter.gen_init_particles()
-        self.particle_filter.publish_top_particle(self.topparticle_pub)
-
-        # Resample particles
-        self.particle_filter.resample_particles()
-
-        # Publish cloud
-        self.particle_filter.publish_particle_cloud(self.particle_pub)
+        # # Get lidar readings in x directions
+        # robo_pts = self.get_x_directions(NUM_DIRECTIONS)
+        # # For each particle compare lidar scan with map
+        # self.particle_filter.compare_points(robo_pts)
+        #
+        # # Publish best guessself.particle_filter.gen_init_particles()
+        # self.particle_filter.publish_top_particle(self.topparticle_pub)
+        #
+        # # Resample particles
+        # self.particle_filter.resample_particles()
+        #
+        # # Publish cloud
+        # self.particle_filter.publish_particle_cloud(self.particle_pub)
 
         while not(rospy.is_shutdown()):
             if (self.odom_changed):

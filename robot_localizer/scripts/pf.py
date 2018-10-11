@@ -45,6 +45,7 @@ class ParticleFilter(object):
             if particle.weight > top_particle.weight:
                 top_particle = particle
 
+        print([top_particle.get_pose()])
         publisher.publish([top_particle.get_pose()])
 
     def gen_init_particles(self):
@@ -97,23 +98,23 @@ class ParticleFilter(object):
         # NOTE: We scale the variance instead of the standard deviation because
         # that makes it independent of the update time (the noise in one update
         # will be the same as the sum of the noise in two updates)
-        distance = math.sqrt(transform.translation[0]**2 + transform.translation[1]**2)
+        distance = math.sqrt(transform['translation'][0]**2 + transform['translation'][1]**2)
         translation_mean, translation_var = 0, DISTANCE_VAR_SCALE * distance  # scale with magnitude
         rotation_mean, rotation_var = 0, ANGLE_VAR_SCALE
 
         modified_transform = transform
-        modified_transform.translation[0] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
-        modified_transform.translation[1] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
-        modified_transform.rotation += np.random.normal(rotation_mean, math.sqrt(rotation_var))
+        modified_transform['translation'][0] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
+        modified_transform['translation'][1] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
+        modified_transform['rotation'] += np.random.normal(rotation_mean, math.sqrt(rotation_var))
 
         self.update_particle(particle, modified_transform)
 
     def update_particle(self, particle, transform):
         # rotate translation in the particle's direction
-        particle_translation = self.transform_helper.rotate_2d_vector(transform.translation, particle.angle)
+        particle_translation = self.transform_helper.rotate_2d_vector(transform['translation'], particle.theta)
 
         particle.translate(particle_translation)
-        particle.rotate(transform.rotation)
+        particle.rotate(transform['rotation'])
 
 
     # def compare_points(self):
