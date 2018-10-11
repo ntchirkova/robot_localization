@@ -20,6 +20,11 @@ class Particle(object):
     def rotate(self, angle):
         self.angle = self.tfHelper.angle_normalize(self.theta + angle)
 
+    def get_pose(self):
+        translation = [self.x, self.y, 0]
+        rotation = self.tfHelper.convert_theta_to_quaternion(self.theta)
+        return self.tfHelper.convert_translation_rotation_to_pose(translation, rotation)
+
 class ParticleCloud(object):
 
     def __init__(self, p):

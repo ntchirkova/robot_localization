@@ -19,30 +19,33 @@ class ParticleFilter(object):
     """ The class that represents a Particle Filter ROS Node
     """
     def __init__(self):
-        #rospy.init_node('pf')
-
-        # pose_listener responds to selection of a new approximate robot
-        # location (for instance using rviz)
-        rospy.Subscriber("initialpose",
-                         PoseWithCovarianceStamped,
-                         self.update_initial_pose)
-
-        # publisher for the particle cloud for visualizing in rviz.
-        self.particle_pub = rospy.Publisher("particlecloud",
-                                            PoseArray,
-                                            queue_size=10)
-
-        #publisher for the top weighted particle
-        self.topparticle_pub = rospy.Publisher("topparticle",
-                                            PoseArray,
-                                            queue_size=10)
-
+        # # pose_listener responds to selection of a new approximate robot
+        # # location (for instance using rviz)
+        # rospy.Subscriber("initialpose",
+        #                  PoseWithCovarianceStamped,
+        #                  self.update_initial_pose)
 
         # create instances of two helper objects that are provided to you
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
         self.particles = []
+
+    def publish_particle_cloud(self, publisher):
+        # Make pose from particle for all particles
+        particle_poses = [particle.get_pose() for particle in self.particles]
+
+        # Publish
+        publisher.publish(particle_poses)
+
+    def publish_top_particle(self, publisher):
+        top_particle = self.particles[0]
+
+        for particle in self.particles:
+            if particle.weight > top_particle.weight:
+                top_particle = particle
+
+        publisher.publish([top_particle.get_pose()])
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
