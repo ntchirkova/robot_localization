@@ -31,7 +31,7 @@ class RobotLocalizer(object):
         self.tfHelper = TFHelper()
 
         self.particle_filter = ParticleFilter()
-
+        print("ParticleFilter initialized")
         self.xs = None
         self.ys = None
         self.ranges = []  # Lidar scan
@@ -48,6 +48,8 @@ class RobotLocalizer(object):
         # subscribers and publisher
         self.laser_sub = rospy.Subscriber('/scan', LaserScan, self.process_scan)
         self.odom_sub = rospy.Subscriber("/odom", Odometry, self.update_odom)
+
+        print("RobotLocalizer initialized")
 
     def update_odom(self, msg):
         MIN_TRAVEL_DISANCE = 0.1
@@ -161,25 +163,26 @@ class RobotLocalizer(object):
         # self.generate_random_points()
         NUM_DIRECTIONS = 8
 
-        if (self.odom_changed):
-            print("Odom changed, let's do some stuff")
+        while not(rospy.is_shutdown()):
+            if (self.odom_changed):
+                print("Odom changed, let's do some stuff")
 
-            # Get lidar readings in every direction
-            self.get_x_directions(NUM_DIRECTIONS)
+                # Get lidar readings in every direction
+                self.get_x_directions(NUM_DIRECTIONS)
 
-            # For each particle compare lidar scan with map
-            self.particle_filter.compare_points()
+                # For each particle compare lidar scan with map
+                self.particle_filter.compare_points()
 
-            # Publish best guess
+                # Publish best guess
 
-            # Resample particles
-            self.particle_filter.resample_particles()
+                # Resample particles
+                self.particle_filter.resample_particles()
 
-            # Update particles
-            self.particle_filter.update_all_particles(self.diff_transform)
+                # Update particles
+                self.particle_filter.update_all_particles(self.diff_transform)
 
-            # Wait until robot moves enough again
-            self.odom_changed = False
+                # Wait until robot moves enough again
+                self.odom_changed = False
 
 
 print('before starting')

@@ -82,6 +82,10 @@ class ParticleFilter(object):
             print("No particles to resample from")
             return None
 
+    def update_all_particles(self, transform):
+        for particle in self.particles:
+            self.update_particle_with_randomness(particle, transform)
+
     def update_particle_with_randomness(self, particle, transform):
         # TODO(matt): Make this a tunable param
         DISTANCE_VAR_SCALE = 0.1
@@ -133,7 +137,6 @@ class ParticleFilter(object):
             for pt in p_cloud.pts:
                 d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
             p.weight = 1 / (sum(d) + .01)
-
 
 
 
