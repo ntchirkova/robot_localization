@@ -69,6 +69,7 @@ class ParticleFilter(object):
 
     def publish_particle_cloud(self):
         msg = PoseArray()
+        msg.header.frame_id = "odom"
 
         # Make pose from particle for all particles
         msg.poses = [particle.get_pose() for particle in self.particles]
@@ -139,8 +140,8 @@ class ParticleFilter(object):
 
     def update_all_particles(self, transform):
         for particle in self.particles:
-            # self.update_particle(particle, transform)
-            self.update_particle_with_randomness(particle, transform)
+            self.update_particle(particle, transform)
+            # self.update_particle_with_randomness(particle, transform)
 
     def update_particle_with_randomness(self, particle, transform):
         # TODO(matt): Make this a tunable param
