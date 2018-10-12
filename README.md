@@ -41,24 +41,23 @@ ParticleFilter manages all logic and calculation for the particle filter. It isn
 When initialized, the Particle class creates particles with a location, direction, and weight. Each can then be translated in its reference frame. It also has a getter for Pose.
 
 #### OccupancyField
+This class stores an occupancy field of the given map. It is used to determine how well a lidar scan matches the map for a given particle.  
+
 #### TFHelper
-TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames.
-**---------show which transforms were used and what the final map was (like the diagram Paul drew)**
+TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames. It also stores general purpose functions for converting between pose and x y theta, or angles to quaternion.
 
 ## Design Decision
 When initially structuring the code we decided to have a seperate class called robot_localizer, that would instantiate the particle filter
-class, as well as the occupancy field and tf_helper. The reaasoning behind this decision was to have one class that interfaces with the robot and
+class, as well as the occupancy field and tf_helper. The reasoning behind this decision was to have one class that interfaces with the robot and
 combines all the other classes. However, we realized later that everything in the robot localizer class could have been initialized in the particle
 filter class. Essentially the robot localizer class could have been combined into a very large class with particle filter and this would have in the end
-caused less disorganization.
-
-## Challenges
-+ errors / compiling everything at the end
+caused less disorganization. Alternatively, we could have let the particle filter be its own node.
 
 ## Challenges / Future Improvements
-+ better communication
 + incremental testing
 + improving computation run-time vs accuracy
++ better software engineering workflow
++ better communication (few meeting times, too many people working in a small space)
 
-## Learnings
-Through the process of developing the robot localizer we got an introduction and real world application of Bayesian statistics. This is because we use a best guess of where the robot might be to determin where it actually is.
+## Lessons
+Through the process of developing the robot localizer we got an introduction and real world application of Bayesian statistics. This is because we use a best guess of where the robot might be to determine where it actually is.
