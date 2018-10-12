@@ -102,8 +102,8 @@ class ParticleFilter(object):
         for i in range(500):
             # x = r.randrange(0,width)
             # y = r.randrange(0,height)
-            x = r.uniform(0, width)
-            y = r.uniform(0, height)
+            x = r.uniform(-5, 5)
+            y = r.uniform(-5, 5)
             t = math.radians(r.randrange(0,360))
             p = Particle(x,y,t)
             self.particles.append(p)

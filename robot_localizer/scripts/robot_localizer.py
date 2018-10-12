@@ -84,7 +84,7 @@ class RobotLocalizer(object):
         ]
 
         # rotate to vehicle frame
-        translation = self.tfHelper.rotate_2d_vector(translation, last_xyt[2])
+        translation = self.tfHelper.rotate_2d_vector(translation, -1 * last_xyt[2])  # negative angle to counter rotation
 
         # get orientation diff
         theta = self.tfHelper.angle_diff(current_xyt[2], last_xyt[2])
@@ -98,10 +98,12 @@ class RobotLocalizer(object):
             # )
 
             print("travelled: {}".format(distance_travelled))
+
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
             }
+            print("transform\n    x: {}\n    y: {}".format(last_to_current_transform['translation'][0], last_to_current_transform['translation'][1]))
 
             self.diff_transform = last_to_current_transform
             self.last_odom_msg = msg
