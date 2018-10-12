@@ -57,4 +57,4 @@ caused less disorganization.
 + improving computation run-time vs accuracy
 
 ## Learnings
-+ how a particle filter works
+Through the process of developing the robot localizer we got an introduction and real world application of Bayesian statistics. This is because we use a best guess of where the robot might be to determin where it actually is. 
