@@ -24,7 +24,8 @@ class TFHelper(object):
         self.tf_listener = TransformListener()
         self.tf_broadcaster = TransformBroadcaster()
 
-    def convert_translation_rotation_to_pose(self, translation, rotation):
+    @staticmethod
+    def convert_translation_rotation_to_pose(translation, rotation):
         """ Convert from representation of a pose as translation and rotation
             (Quaternion) tuples to a geometry_msgs/Pose message """
         return Pose(position=Point(x=translation[0],
@@ -59,10 +60,12 @@ class TFHelper(object):
         angles = t.euler_from_quaternion(orientation_tuple)
         return (pose.position.x, pose.position.y, angles[2])
 
-    def convert_theta_to_quaternion(self, theta):
+    @staticmethod
+    def convert_theta_to_quaternion(theta):
         return t.quaternion_from_euler(0, 0, theta)
 
-    def angle_normalize(self, z):
+    @staticmethod
+    def angle_normalize(z):
         """ convenience function to map an angle to the range [-pi,pi] """
         return math.atan2(math.sin(z), math.cos(z))
 
