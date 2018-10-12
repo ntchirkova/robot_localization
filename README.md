@@ -41,6 +41,12 @@ When initialized, the Particle class creates particles with a location, directio
 
 #### RobotLocalizer
 
+## Design Decision
+When initially structuring the code we decided to have a seperate class called robot_localizer, that would instantiate the particle filter
+class, as well as the occupancy field and tf_helper. The reaasoning behind this decision was to have one class that interfaces with the robot and
+combines all the other classes. However, we realized later that everything in the robot localizer class could have been initialized in the particle
+filter class. Essentially the robot localizer class could have been combined into a very large class with particle filter and this would have in the end 
+caused less disorganization. 
 
 ## Challenges
 + errors / compiling everything at the end
