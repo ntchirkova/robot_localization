@@ -41,8 +41,10 @@ ParticleFilter manages all logic and calculation for the particle filter. It isn
 When initialized, the Particle class creates particles with a location, direction, and weight. Each can then be translated in its reference frame. It also has a getter for Pose.
 
 #### OccupancyField
+This class stores an occupancy field of the given map. It is used to determine how well a lidar scan matches the map for a given particle.  
+
 #### TFHelper
-TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames.
+TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames. It also stores general purpose functions for convertering between pose and x y theta, or angles to quaternion. 
 **---------show which transforms were used and what the final map was (like the diagram Paul drew)**
 
 ## Design Decision
@@ -56,9 +58,10 @@ caused less disorganization.
 + errors / compiling everything at the end
 
 ## Future Improvements
-+ better communication
 + incremental testing
 + improving computation run-time vs accuracy
++ better software engineering workflow
++ better communication (few meeting times, too many people working in a small space)
 
 ## Learnings
 Through the process of developing the robot localizer we got an introduction and real world application of Bayesian statistics. This is because we use a best guess of where the robot might be to determin where it actually is. 
