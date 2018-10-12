@@ -84,24 +84,26 @@ class RobotLocalizer(object):
         ]
 
         # rotate to vehicle frame
-        translation = self.tfHelper.rotate_2d_vector(translation, last_xyt[2])
+        translation = self.tfHelper.rotate_2d_vector(translation, -1 * last_xyt[2])  # negative angle to counter rotation
 
         # get orientation diff
         theta = self.tfHelper.angle_diff(current_xyt[2], last_xyt[2])
 
         # Schedule to update particle filter if there's enough change
         distance_travelled = math.sqrt(translation[0] ** 2 + translation[1] ** 2)
-        print(distance_travelled)
         if distance_travelled > MIN_TRAVEL_DISANCE or theta > MIN_TRAVEL_ANGLE:
             # TODO(matt): consider using actual transform
             # last_to_current_transform = self.tfHelper.convert_translation_rotation_to_pose(
             #     translation, self.tfHelper.convert_theta_to_quaternion(theta)
             # )
 
+            print("travelled: {}".format(distance_travelled))
+
             last_to_current_transform = {
                 'translation': translation,
                 'rotation': theta,
             }
+            print("transform\n    x: {}\n    y: {}".format(last_to_current_transform['translation'][0], last_to_current_transform['translation'][1]))
 
             self.diff_transform = last_to_current_transform
             self.last_odom_msg = msg
