@@ -17,7 +17,7 @@ Using ros-based processes, we implemented a particle filter node that contained 
 
 **---------setup before localization: bag map, set up rviz**
 
-+ waits for odom movement
+To make a good bayesian update, the neato needs to move sufficiently. Every odom message is compared to the last used odom position, which is only updated when the robot translates or rotates enough. When that happen, the transform between the previous odom position and the current one is calculated to update particles. 
 
 The particle filter is actually run in robot_localizer.py through the run function. It starts off with the initialization of 500 particles with a direction, 2D location, and weight of 1 using the Particles class. These particles are the initial estimates for the robot's location given a known map, but are random at initialization.
 
