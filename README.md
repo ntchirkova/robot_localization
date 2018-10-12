@@ -29,17 +29,20 @@ A brief overview of our particle filter run-time:
 + Transform resampled points with randomness
 + Repeat all but initial step
 
+#### RobotLocalizer
+RobotLocalizer runs the show. It's the only node running, and has instances of ParticleFilter and TFHelper. As the only running node, it sets up and shares publishers for ParticleFilter. It has a running loop which executes the logic from above. In fact, reading the run function intentionally looks like a bullet pointed list of said logic.
 
+#### ParticleFilter
+ParticleFilter manages all logic and calculation for the particle filter. It isn't a node, so it gets its publishers from RobotLocalizer. It has a list of particles that is updated by the localizer when the odom frame moves enough. This involves computing weights for each particle (based on alignment between the scan at its position and the map), resampling with replacement to bias towards highly weighted particles, and move them forwards with noise to mimic the vehicle motion.
+
+#### Particle and ParticleCloud
+When initialized, the Particle class creates particles with a location, direction, and weight. Each can then be translated in its reference frame. It also has a getter for Pose.
+
+#### OccupancyField
 #### TFHelper
 TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames.
 **---------show which transforms were used and what the final map was (like the diagram Paul drew)**
-#### Particle and ParticleCloud
-When initialized, the Particle class creates particles with a location, direction, and weight. Each can then be translated 
-#### OccupancyField
 
-#### ParticleFilter
-
-#### RobotLocalizer
 
 
 ## Challenges
