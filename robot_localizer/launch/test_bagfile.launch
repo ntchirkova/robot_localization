@@ -21,8 +21,8 @@
 
  <group unless="$(arg use_builtin)">
  <!-- if using builtin: type=pf, if using our own: type=robot_localizer.py -->
-  <node name="pf" pkg="robot_localizer" type="robot_localizer.py" output="screen"> 
+  <!-- <node name="pf" pkg="robot_localizer" type="robot_localizer.py" output="screen"> 
     <remap from="scan" to="$(arg scan_topic)"/>
-  </node>
+  </node> -->
 </group>
 </launch>

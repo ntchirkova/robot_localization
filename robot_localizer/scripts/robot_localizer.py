@@ -195,15 +195,17 @@ class RobotLocalizer(object):
         r = rospy.Rate(5)
 
         while not(rospy.is_shutdown()):
+            self.particle_filter.gauge_particle_position()
             if (self.odom_changed):
                 print("Odom changed, let's do some stuff")
 
                 # Get lidar readings in x directions
                 robo_pts = self.get_x_directions(NUM_DIRECTIONS)
 
-                # Update particles
+                # Update particle poses
                 self.particle_filter.update_all_particles(self.diff_transform)
 
+                # Display new markers
                 self.particle_filter.draw_markerArray()
 
                 # For each particle compare lidar scan with map

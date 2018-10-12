@@ -36,6 +36,14 @@ class ParticleFilter(object):
         self.particles = []
         self.markerArray = MarkerArray()
 
+    def gauge_particle_position(self):
+        xs = [particle.x for particle in self.particles]
+        ys = [particle.y for particle in self.particles]
+
+        print("min x: {} --- average x: {} --- max x: {} \nmin y: {} --- average y: {} --- max y: {}".format(
+            min(xs), sum(xs)/len(xs), max(xs), min(ys), sum(ys)/len(ys), max(ys) 
+        ))
+
     def get_marker(self, x, y):
         marker = Marker()
         marker.header.frame_id = "base_link"
@@ -43,9 +51,9 @@ class ParticleFilter(object):
         marker.pose.position.x = x
         marker.pose.position.y = y
         marker.pose.position.z = 0
-        marker.scale.x = .3
-        marker.scale.y = .3
-        marker.scale.z = .3
+        marker.scale.x = 0.3
+        marker.scale.y = 0.3
+        marker.scale.z = 0.3
         marker.color.a = 1.0
         marker.color.r = 0.0
         marker.color.g = 1.0
@@ -77,7 +85,7 @@ class ParticleFilter(object):
             if particle.weight > top_particle.weight:
                 top_particle = particle
 
-        msg.poses.append(top_particle)
+        msg.poses.append(top_particle.get_pose())
         # print(msg)
         self.top_particle_pub.publish(msg)
 
@@ -85,11 +93,16 @@ class ParticleFilter(object):
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
-        width = self.occupancy_field.map.info.width
-        height = self.occupancy_field.map.info.height
+        # width = self.occupancy_field.map.info.width
+        # height = self.occupancy_field.map.info.height
+        width = 10
+        height = 10
+        print("map width: {}, height: {}".format(width, height))
         for i in range(500):
-            x = r.randrange(0,width)
-            y = r.randrange(0,height)
+            # x = r.randrange(0,width)
+            # y = r.randrange(0,height)
+            x = r.uniform(0, width)
+            y = r.uniform(0, height)
             t = math.radians(r.randrange(0,360))
             p = Particle(x,y,t)
             self.particles.append(p)
@@ -126,11 +139,12 @@ class ParticleFilter(object):
 
     def update_all_particles(self, transform):
         for particle in self.particles:
+            # self.update_particle(particle, transform)
             self.update_particle_with_randomness(particle, transform)
 
     def update_particle_with_randomness(self, particle, transform):
         # TODO(matt): Make this a tunable param
-        DISTANCE_VAR_SCALE = 0.1
+        DISTANCE_VAR_SCALE = 0.001
         ANGLE_VAR_SCALE = math.radians(5)
 
         # NOTE: We scale the variance instead of the standard deviation because
