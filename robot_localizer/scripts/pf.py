@@ -10,7 +10,7 @@ import numpy as np
 from particle import Particle, ParticleCloud
 from helper_functions import TFHelper
 from occupancy_field import OccupancyField
-from visualization_msgs.msg import MarkerArray
+from visualization_msgs.msg import Marker, MarkerArray
 import random as r
 import math
 
@@ -18,29 +18,57 @@ import math
 class ParticleFilter(object):
     """ The class that represents a Particle Filter ROS Node
     """
-    def __init__(self):
+    def __init__(self, top_particle_pub, particle_cloud_pub, particle_cloud_marker_pub):
         # # pose_listener responds to selection of a new approximate robot
         # # location (for instance using rviz)
         # rospy.Subscriber("initialpose",
         #                  PoseWithCovarianceStamped,
         #                  self.update_initial_pose)
 
+        self.top_particle_pub = top_particle_pub
+        self.particle_cloud_pub = particle_cloud_pub
+        self.particle_cloud_marker_pub = particle_cloud_marker_pub
+
         # create instances of two helper objects that are provided to you
         # as part of the project
         self.occupancy_field = OccupancyField()
         self.transform_helper = TFHelper()
         self.particles = []
+        self.markerArray = MarkerArray()
 
-    def publish_particle_cloud(self, publisher):
+    def get_marker(self, x, y):
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.type = marker.SPHERE
+        marker.pose.position.x = x
+        marker.pose.position.y = y
+        marker.pose.position.z = 0
+        marker.scale.x = .3
+        marker.scale.y = .3
+        marker.scale.z = .3
+        marker.color.a = 1.0
+        marker.color.r = 0.0
+        marker.color.g = 1.0
+        marker.color.b = 0.0
+        return marker
+
+    def draw_markerArray(self):
+        markerArray = MarkerArray()
+        for p in self.particles:
+            m = self.get_marker(p.x, p.y)
+            markerArray.markers.append(m)
+        self.particle_cloud_marker_pub.publish(markerArray)
+
+    def publish_particle_cloud(self):
         msg = PoseArray()
 
         # Make pose from particle for all particles
         msg.poses = [particle.get_pose() for particle in self.particles]
 
         # Publish
-        publisher.publish(msg)
+        self.particle_cloud_pub.publish(msg)
 
-    def publish_top_particle(self, publisher):
+    def publish_top_particle(self):
         msg = PoseArray()
 
         top_particle = self.particles[0]
@@ -50,8 +78,10 @@ class ParticleFilter(object):
                 top_particle = particle
 
         msg.poses.append(top_particle)
-        print(msg)
-        publisher.publish(msg)
+        # print(msg)
+        self.top_particle_pub.publish(msg)
+
+        return top_particle.get_pose()
 
     def gen_init_particles(self):
         """Generating random particles with x, y, and t values"""
@@ -150,20 +180,20 @@ class ParticleFilter(object):
                 d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
             p.weight = 1 / (sum(d) + .01)
 
-
-
     def run(self):
-        r = rospy.Rate(5)
+        pass
+        # r = rospy.Rate(5)
 
-        while not(rospy.is_shutdown()):
-            # in the main loop all we do is continuously broadcast the latest
-            # map to odom transform
-            self.transform_helper.send_last_map_to_odom_transform()
-            r.sleep()
+        # while not(rospy.is_shutdown()):
+        #     # in the main loop all we do is continuously broadcast the latest
+        #     # map to odom transform
+        #     self.transform_helper.send_last_map_to_odom_transform()
+        #     r.sleep()
 
 
 # use tf module to get transform between last pos and current pos, and apply relative transform to particles.
 
 if __name__ == '__main__':
-    n = ParticleFilter()
-    n.run()
+    pass
+    # n = ParticleFilter()
+    # n.run()

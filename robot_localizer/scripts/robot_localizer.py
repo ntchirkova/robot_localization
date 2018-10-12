@@ -10,7 +10,7 @@ from particle import Particle
 from particle import ParticleCloud
 import matplotlib.pyplot as plt
 from datetime import datetime
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 import statistics
 import random as r
 import time, numpy, math, rospy
@@ -30,8 +30,6 @@ class RobotLocalizer(object):
         rospy.init_node('localizer')
         self.tfHelper = TFHelper()
 
-        self.particle_filter = ParticleFilter()
-        print("ParticleFilter initialized")
         self.xs = None
         self.ys = None
         self.ranges = []  # Lidar scan
@@ -58,6 +56,13 @@ class RobotLocalizer(object):
         self.topparticle_pub = rospy.Publisher("topparticle",
                                             PoseArray,
                                             queue_size=10)
+
+        # publisher for rviz markers
+        self.pub_markers = rospy.Publisher('/visualization_markerarray',
+                                        MarkerArray, queue_size=10)
+
+        self.particle_filter = ParticleFilter(self.topparticle_pub, self.particle_pub, self.pub_markers)
+        print("ParticleFilter initialized")
 
         print("RobotLocalizer initialized")
 
@@ -187,6 +192,7 @@ class RobotLocalizer(object):
         #
         # # Publish cloud
         # self.particle_filter.publish_particle_cloud(self.particle_pub)
+        r = rospy.Rate(5)
 
         while not(rospy.is_shutdown()):
             if (self.odom_changed):
@@ -201,18 +207,21 @@ class RobotLocalizer(object):
                 # For each particle compare lidar scan with map
                 self.particle_filter.compare_points(robo_pts)
 
-                # Publish best guessself.particle_filter.gen_init_particles()
-                self.particle_filter.publish_top_particle(self.topparticle_pub)
+                # Publish best guess self.particle_filter.gen_init_particles()
+                top_particle_pose = self.particle_filter.publish_top_particle()
+                self.tfHelper.fix_map_to_odom_transform(top_particle_pose, rospy.get_rostime())  # TODO: Move?
 
                 # Resample particles
                 self.particle_filter.resample_particles()
 
                 # Publish cloud
-                self.particle_filter.publish_particle_cloud(self.particle_pub)
+                self.particle_filter.publish_particle_cloud()
 
                 # Wait until robot moves enough again
                 self.odom_changed = False
 
+            self.tfHelper.send_last_map_to_odom_transform()
+            r.sleep()
 
 print('before starting')
 if __name__ == '__main__':
