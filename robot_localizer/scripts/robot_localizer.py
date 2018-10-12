@@ -200,7 +200,6 @@ class RobotLocalizer(object):
             self.particle_filter.gauge_particle_position()
             if (self.odom_changed):
                 print("Odom changed, let's do some stuff")
-
                 # Get lidar readings in x directions
                 robo_pts = self.get_x_directions(NUM_DIRECTIONS)
 
@@ -215,7 +214,7 @@ class RobotLocalizer(object):
 
                 # Publish best guess self.particle_filter.gen_init_particles()
                 top_particle_pose = self.particle_filter.publish_top_particle()
-                self.tfHelper.fix_map_to_odom_transform(top_particle_pose, rospy.get_rostime())  # TODO: Move?
+                self.tfHelper.fix_map_to_odom_transform(top_particle_pose, rospy.Time(0))  # TODO: Move?
 
                 # Resample particles
                 self.particle_filter.resample_particles()

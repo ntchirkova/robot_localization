@@ -12,7 +12,8 @@ from helper_functions import TFHelper
 from occupancy_field import OccupancyField
 from visualization_msgs.msg import Marker, MarkerArray
 import random as r
-import math
+import math, time
+from copy import deepcopy
 
 
 class ParticleFilter(object):
@@ -123,17 +124,21 @@ class ParticleFilter(object):
     def resample_particles(self):
         """Resample particles with replacement."""
         if len(self.particles):
-            
-            weights = [particle.weight for particle in self.particles]
+            weights = [particle.weight  if not math.isnan(particle.weight) else 0.0001 for particle in self.particles]
             total_weight = sum(weights)
             weights = [weight / total_weight for weight in weights]
 
-            self.particles = list(np.random.choice(
+            before = time.time()
+            self.particles = [particle.deep_copy() for particle in list(np.random.choice(
+            # self.particles = [particle for particle in list(np.random.choice(
                 self.particles,
                 size=len(self.particles),
                 replace=True,
                 p=weights,
-            ))
+            ))]
+            after = time.time()
+            print("************************************timer: {}".format(after-before))
+            print("number of particles: {}".format(len(self.particles)))
         else:
             print("No particles to resample from")
             return None
@@ -156,9 +161,13 @@ class ParticleFilter(object):
         rotation_mean, rotation_var = 0, ANGLE_VAR_SCALE
 
         modified_transform = transform
-        modified_transform['translation'][0] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
-        modified_transform['translation'][1] += np.random.normal(translation_mean, math.sqrt(translation_var), 1)
-        modified_transform['rotation'] += np.random.normal(rotation_mean, math.sqrt(rotation_var))
+        # modified_transform['translation'][0] += float(np.random.normal(translation_mean, math.sqrt(translation_var), 1))
+        # modified_transform['translation'][1] += float(np.random.normal(translation_mean, math.sqrt(translation_var), 1))
+        # modified_transform['rotation'] += float(np.random.normal(rotation_mean, math.sqrt(rotation_var)))
+
+        modified_transform['translation'][0] += float(np.random.uniform(-0.01, 0.01, 1))
+        modified_transform['translation'][1] += float(np.random.uniform(-0.01, 0.01, 1))
+        modified_transform['rotation'] += float(np.random.uniform(-math.radians(5), -math.radians(5), 1))
 
         self.update_particle(particle, modified_transform)
 
@@ -192,7 +201,8 @@ class ParticleFilter(object):
             p_cloud.generate_points(robo_pts)
             d = []
             for pt in p_cloud.pts:
-                d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
+                if pt[1] != 0:
+                    d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
             p.weight = 1 / (sum(d) + .01)
 
     def run(self):
