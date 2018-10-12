@@ -12,10 +12,7 @@ The objective of this project was to create a working robot localization algorit
 
 ## Implementation Overview
 Using ros-based processes, we implemented a particle filter node that contained 5 main object-oriented scripts. Within each of these were the different classes:TFHelper, Particle, ParticleCloud, OccupancyField, ParticleFilter, and RobotLocalizer.
-
-**These classes will be explained in detail later.**
-
-**---------setup before localization: bag map, set up rviz**
+These classes will be explained in detail later.
 
 + waits for odom movement
 
@@ -58,7 +55,7 @@ caused less disorganization.
 ## Challenges
 + errors / compiling everything at the end
 
-## Future Improvements
+## Challenges / Future Improvements
 + better communication
 + incremental testing
 + improving computation run-time vs accuracy
