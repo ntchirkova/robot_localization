@@ -18,7 +18,7 @@ class Particle(object):
         self.y += translation[1]
 
     def rotate(self, angle):
-        self.angle = self.tfHelper.angle_normalize(self.theta + angle)
+        self.theta = self.tfHelper.angle_normalize(self.theta + angle)
 
     def get_pose(self):
         translation = [self.x, self.y, 0]

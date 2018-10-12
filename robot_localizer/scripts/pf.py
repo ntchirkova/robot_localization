@@ -69,7 +69,7 @@ class ParticleFilter(object):
 
     def publish_particle_cloud(self):
         msg = PoseArray()
-        msg.header.frame_id = "odom"
+        msg.header.frame_id = "map"
 
         # Make pose from particle for all particles
         msg.poses = [particle.get_pose() for particle in self.particles]
