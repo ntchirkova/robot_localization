@@ -128,7 +128,7 @@ class ParticleFilter(object):
             total_weight = sum(weights)
             weights = [weight / total_weight for weight in weights]
 
-            return list(np.random.choice(
+            self.particles = list(np.random.choice(
                 self.particles,
                 size=len(self.particles),
                 replace=True,
@@ -140,19 +140,19 @@ class ParticleFilter(object):
 
     def update_all_particles(self, transform):
         for particle in self.particles:
-            self.update_particle(particle, transform)
-            # self.update_particle_with_randomness(particle, transform)
+            # self.update_particle(particle, transform)
+            self.update_particle_with_randomness(particle, transform)
 
     def update_particle_with_randomness(self, particle, transform):
         # TODO(matt): Make this a tunable param
         DISTANCE_VAR_SCALE = 0.001
-        ANGLE_VAR_SCALE = math.radians(5)
+        ANGLE_VAR_SCALE = math.radians(0.5)
 
         # NOTE: We scale the variance instead of the standard deviation because
         # that makes it independent of the update time (the noise in one update
         # will be the same as the sum of the noise in two updates)
         distance = math.sqrt(transform['translation'][0]**2 + transform['translation'][1]**2)
-        translation_mean, translation_var = 0, DISTANCE_VAR_SCALE * distance  # scale with magnitude
+        translation_mean, translation_var = 0, DISTANCE_VAR_SCALE #* distance  # scale with magnitude
         rotation_mean, rotation_var = 0, ANGLE_VAR_SCALE
 
         modified_transform = transform
