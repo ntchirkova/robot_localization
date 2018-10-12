@@ -192,7 +192,7 @@ class ParticleFilter(object):
             p_cloud.generate_points(robo_pts)
             d = []
             for pt in p_cloud.pts:
-                d.append(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1]))
+                d.append(abs(self.occupancy_field.get_closest_obstacle_distance(pt[0],pt[1])))
             p.weight = 1 / (sum(d) + .01)
 
     def run(self):
