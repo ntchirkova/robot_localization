@@ -204,6 +204,8 @@ class RobotLocalizer(object):
                 # Update particles
                 self.particle_filter.update_all_particles(self.diff_transform)
 
+                self.particle_filter.draw_markerArray()
+
                 # For each particle compare lidar scan with map
                 self.particle_filter.compare_points(robo_pts)
 
