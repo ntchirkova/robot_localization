@@ -45,7 +45,12 @@ When initialized, the Particle class creates particles with a location, directio
 TFHelper was a class already given to us. We used it to help with the transforms required between the different map frames.
 **---------show which transforms were used and what the final map was (like the diagram Paul drew)**
 
-
+## Design Decision
+When initially structuring the code we decided to have a seperate class called robot_localizer, that would instantiate the particle filter
+class, as well as the occupancy field and tf_helper. The reaasoning behind this decision was to have one class that interfaces with the robot and
+combines all the other classes. However, we realized later that everything in the robot localizer class could have been initialized in the particle
+filter class. Essentially the robot localizer class could have been combined into a very large class with particle filter and this would have in the end 
+caused less disorganization. 
 
 ## Challenges
 + errors / compiling everything at the end
@@ -56,4 +61,4 @@ TFHelper was a class already given to us. We used it to help with the transforms
 + improving computation run-time vs accuracy
 
 ## Learnings
-+ how a particle filter works
+Through the process of developing the robot localizer we got an introduction and real world application of Bayesian statistics. This is because we use a best guess of where the robot might be to determin where it actually is. 
